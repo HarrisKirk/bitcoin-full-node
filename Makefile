@@ -7,7 +7,8 @@ DISC_CONTAINER_WORKDIR = /opt/devops-disc/disc-app
 GIT_BRANCH = `git branch --all | grep "\*" | cut -d " " -f 2 | cut -c1-19`
 DOCKER_IMAGE_NAME = blin
 DOCKER_IMAGE = $(DOCKER_IMAGE_NAME):latest
-DOCKER_RUN_CMD =  docker container run --dns=8.8.8.8 --rm --name=blin --workdir $(DISC_CONTAINER_WORKDIR) --user $(id -u):$(id -g)
+DOCKER_RUN_CMD = docker container run --dns=8.8.8.8 --rm --name=blin --workdir $(DISC_CONTAINER_WORKDIR) --user $(id -u):$(id -g)
+DOCKER_TOKEN_STR = -e LINODE_CLI_TOKEN
 
 help:
 	@echo ""
@@ -19,8 +20,11 @@ help:
 build: ## Basic build of image
 	docker build --tag $(DOCKER_IMAGE_NAME) . ;\
 
+cli: build ## Enter interactive disc shell in the container.    
+	$(DOCKER_RUN_CMD) -it $(DOCKER_TOKEN_STR) $(DOCKER_IMAGE) /bin/bash ;\
+
 run: build ## Run specific BLIN commands in the run.sh file 
-	$(DOCKER_RUN_CMD) -e LINODE_CLI_TOKEN $(DOCKER_IMAGE)  sh -c "linode-cli linodes list" ;\
+	$(DOCKER_RUN_CMD) $(DOCKER_TOKEN_STR) $(DOCKER_IMAGE)  sh -c "linode-cli linodes list" ;\
 
 clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\
