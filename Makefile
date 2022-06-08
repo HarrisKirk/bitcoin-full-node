@@ -22,7 +22,7 @@ build: ## Basic build of image
 	docker build --tag $(DOCKER_IMAGE_NAME) . ;\
 
 run: build ## Run specific BLIN commands in the run.sh file 
-	$(DOCKER_RUN_CMD) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) sh -c "pwd" ;\
+	$(DOCKER_RUN_CMD) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) sh -c "linode-cli --help" ;\
 
 clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\
