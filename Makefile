@@ -20,7 +20,7 @@ build: ## Basic build of image
 	docker build --tag $(DOCKER_IMAGE_NAME) . ;\
 
 run: build ## Run specific BLIN commands in the run.sh file 
-	$(DOCKER_RUN_CMD) -e LINODE_CLI_TOKEN $(DOCKER_IMAGE)  sh -c "env" ;\
+	$(DOCKER_RUN_CMD) -e LINODE_CLI_TOKEN $(DOCKER_IMAGE)  sh -c "linode-cli linodes list" ;\
 
 clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\
