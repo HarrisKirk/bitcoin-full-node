@@ -20,7 +20,7 @@ help:
 build: ## Basic build of image
 	docker build --tag $(DOCKER_IMAGE_NAME) . ;\
 
-cli: build ## Enter interactive disc shell in the container.    
+cli: build ## Enter interactive shell to used linode-cli in the container.    
 	$(DOCKER_RUN_CMD) -it $(DOCKER_TOKEN_STR) $(DOCKER_IMAGE) /bin/bash ;\
 
 run: build ## Run specific BLIN commands in the run.sh file 
