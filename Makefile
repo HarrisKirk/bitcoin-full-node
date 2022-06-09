@@ -20,11 +20,14 @@ help:
 build: ## Basic build of image
 	docker build --tag $(DOCKER_IMAGE_NAME) . ;\
 
-cli: build ## Enter interactive shell to used linode-cli in the container.    
+cli: build ## Enter interactive shell to run linode-cli in the container.    
 	$(DOCKER_RUN_CMD) -it $(DOCKER_TOKEN_STR) $(DOCKER_IMAGE) /bin/bash ;\
 
 run: build ## Run specific BLIN commands in the run.sh file 
 	$(DOCKER_RUN_CMD) $(DOCKER_TOKEN_STR) $(DOCKER_IMAGE)  sh -c "linode-cli linodes list" ;\
+
+create: build
+	$(DOCKER_RUN_CMD) $(DOCKER_TOKEN_STR) $(DOCKER_IMAGE)  sh -c "linode-cli linodes create --root_pass xxxxxxx12! --region us-east --image linode/ubuntu21.10 --type g6-standard-1" ;\
 
 clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\
