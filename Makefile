@@ -3,7 +3,7 @@
 #
 .PHONY: help build
 .SILENT: pre-commit
-DISC_CONTAINER_WORKDIR = /opt/devops-disc/disc-app
+DISC_CONTAINER_WORKDIR = /opt/devops-blin
 GIT_BRANCH = `git branch --all | grep "\*" | cut -d " " -f 2 | cut -c1-19`
 DOCKER_IMAGE_NAME = blin
 DOCKER_IMAGE = $(DOCKER_IMAGE_NAME):latest
