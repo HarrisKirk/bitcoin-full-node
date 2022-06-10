@@ -17,6 +17,9 @@ help:
 	@echo ""
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+create: build ## Create a linode instance
+	$(DOCKER_RUN_CMD) $(DOCKER_ENV_STRING) $(DOCKER_IMAGE)  sh -c "linode-cli linodes create --label hwk-$(GIT_BRANCH)-newark --root_pass ${LINODE_ROOT_PASSWORD} --region us-east --image linode/ubuntu21.10 --type g6-standard-1" ;\
+
 build: ## Basic build of image
 	docker build --quiet --tag $(DOCKER_IMAGE_NAME) . ;\
 
@@ -25,9 +28,6 @@ cli: build ## Enter interactive shell to run linode-cli in the container.
 
 list: build ## Run specific BLIN commands in the run.sh file 
 	$(DOCKER_RUN_CMD) $(DOCKER_ENV_STRING) $(DOCKER_IMAGE)  sh -c "linode-cli linodes list" ;\
-
-create: build
-	$(DOCKER_RUN_CMD) $(DOCKER_ENV_STRING) $(DOCKER_IMAGE)  sh -c "linode-cli linodes create --root_pass ${LINODE_ROOT_PASSWORD} --region us-east --image linode/ubuntu21.10 --type g6-standard-1" ;\
 
 clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\
