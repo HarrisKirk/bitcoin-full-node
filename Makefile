@@ -18,12 +18,12 @@ help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 build: ## Basic build of image
-	docker build --tag $(DOCKER_IMAGE_NAME) . ;\
+	docker build --quiet --tag $(DOCKER_IMAGE_NAME) . ;\
 
 cli: build ## Enter interactive shell to run linode-cli in the container.    
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_IMAGE) /bin/bash ;\
 
-run: build ## Run specific BLIN commands in the run.sh file 
+list: build ## Run specific BLIN commands in the run.sh file 
 	$(DOCKER_RUN_CMD) $(DOCKER_ENV_STRING) $(DOCKER_IMAGE)  sh -c "linode-cli linodes list" ;\
 
 create: build
