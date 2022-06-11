@@ -6,9 +6,9 @@ To create a 1-click bitcoin-full-node on a linode instance
 ## Requirements and Assumptions
 You must run this tool in an environment with these prerequisites
 
+1. A linode account has been created (https://login.linode.com/signup)
 1. You are running some unix-like OS
 1. Docker installed with docker daemon running
-1. A linode account has been created (https://login.linode.com/signup)
 
 # Docker command to avoid needing root
 ```
@@ -25,13 +25,33 @@ To view all make commands:
 $ make
 ```
 # Create a linode instance 
+Use Cloud Console to create an instance
+
+# Verify connectivity to the linode instance
+ssh root@<ip>
+
+# Login to linode and perform these steps
 ```
-make create
+$ useradd -m --shell /bin/bash bitcoinuser
+$ passwd bitcoinuser
+exit shell
+$ login as bitcoinuser
+$ ssh-keygen # press Enter for all prompts
+Copy the ~/.ssh/id_rsa.pub to the github ssh keys section
+$ mkdir github
+$ cd github
+$ git clone git@github.com:HarrisKirk/bitcoin-full-node.git
+$ cd bitcoin-full-node
+$ ./startnode.sh  
+$ cd bitcoin_core/bitcoin-23.0/bin
+$ ./bitcoind -daemon
+$ ./bitcoin-cli getblockchaininfo # repeat until initialblockdownload is false
+
 ```
 
-# Verify commection to the linode instance
 
-# Create new bitcoinuser user
+
+
 
 
 
