@@ -43,10 +43,6 @@ $ cd github
 $ git clone git@github.com:HarrisKirk/bitcoin-full-node.git
 $ cd bitcoin-full-node
 $ ./startnode.sh  
-$ cd bitcoin_core/bitcoin-23.0/bin
-$ ./bitcoind -daemon
-$ ./bitcoin-cli getblockchaininfo # repeat until initialblockdownload is false
-
 ```
 
 
