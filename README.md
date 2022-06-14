@@ -19,19 +19,15 @@ sudo usermod -aG docker $USER   # to not require sudo
 * Docker installed with daemon running?
 * ps -ef | grep dockerd
 
-# Commands
-To view all make commands:
-```
-$ make
-```
-# Create a linode instance 
-Use Cloud Console to create an instance
 
-# Verify connectivity to the linode instance
-ssh root@<ip>
+# Create a linode instance 
+```
+$ make create
+```
 
 # Login to linode and perform these steps
 ```
+$ ssh root@<ip>
 $ useradd -m --shell /bin/bash bitcoinuser
 $ passwd bitcoinuser
 exit shell
