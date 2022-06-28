@@ -27,11 +27,10 @@ $ make create
 
 # Login to linode and perform these steps
 ```
-$ ssh root@<ip>
+$ ssh root@<ip> # obtain the IP on the Cloud Console
 $ useradd -m --shell /bin/bash bitcoinuser
 $ passwd bitcoinuser
-exit shell
-$ login as bitcoinuser
+$ su --login bitcoinuser
 $ ssh-keygen # press Enter for all prompts
 Copy the ~/.ssh/id_rsa.pub to the github ssh keys section
 $ mkdir github
@@ -41,6 +40,11 @@ $ cd bitcoin-full-node
 $ ./startnode.sh  
 ```
 
+# Monitor the bitcoin full node
+```
+$ cd bitcoin-full-node/bitcoin_core/bitcoin-23.0/bin
+$ ./bitcoin-cli getblockchaininfo # wait for initialblockdownload: false
+```
 
 
 
