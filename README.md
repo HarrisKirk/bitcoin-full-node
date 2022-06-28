@@ -46,7 +46,10 @@ $ cd bitcoin-full-node/bitcoin_core/bitcoin-23.0/bin
 $ ./bitcoin-cli getblockchaininfo # wait for initialblockdownload: false
 ```
 
+# Add a volume
+Create a volume of 500 GB using cloud console
 
+Run the provided commands to create file system and mount point
 
 
 
