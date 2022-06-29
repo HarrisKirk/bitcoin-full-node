@@ -5,5 +5,5 @@ BCI (Bitcoin Cloud Infrastructure)
 import subprocess
 
 print ('bci running...')
-cmd = f"linode-cli linodes --help"
+cmd = f"linode-cli linodes list"
 subprocess.run(cmd, cwd='.', check=True, shell=True)
