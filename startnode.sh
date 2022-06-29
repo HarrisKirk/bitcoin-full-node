@@ -1,5 +1,6 @@
 downloads=./downloads
 bitcoin_core=./bitcoin_core
+vol_label=btc_node_data
 
 rm -rf $downloads $bitcoin_core
 mkdir $downloads $bitcoin_core ~/.bitcoin
@@ -11,7 +12,7 @@ tar -zxf ${downloads}/bitcoin-${version}-x86_64-linux-gnu.tar.gz --directory $bi
 echo "[INFO] Extract completed"
 
 cd ${bitcoin_core}/bitcoin-${version}/bin
-./bitcoind -daemon -chain=test
+./bitcoind -daemon -chain=test -datadir=/mnt/${vol_label}
 sleep 10
 ./bitcoin-cli getblockchaininfo # repeat until initialblockdownload is false
 
