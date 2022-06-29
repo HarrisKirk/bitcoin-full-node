@@ -35,4 +35,4 @@ clean: ## Remove all images and output folder
 	sudo rm -rf output
 
 bci: build ## Enter interactive disc shell in the container.    Type 'bci' after command prompt
-	$(DOCKER_RUN_CMD) -it $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash ;\
+	$(DOCKER_RUN_CMD) -it $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci";\
