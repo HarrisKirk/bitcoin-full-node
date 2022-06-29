@@ -42,6 +42,7 @@ $ useradd -m --shell /bin/bash bitcoinuser
 $ passwd bitcoinuser
 $ su --login bitcoinuser
 $ ssh-keygen # press Enter for all prompts
+$ cat ~/.ssh/id_rsa.pub
 Copy the ~/.ssh/id_rsa.pub to the github ssh keys section
 ```
 
