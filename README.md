@@ -32,7 +32,8 @@ Create a volume of 500 GB using cloud console.
 Use the same region as the linode instance
 Specify the volume label as 'btc_node_data'
 
-Run the provided commands to create file system and mount point
+As root, run the provided commands to create file system and mount point
+As root, chmod -R 777 /mnt/btc_node_data
 
 # Login to linode and perform these steps
 ```
