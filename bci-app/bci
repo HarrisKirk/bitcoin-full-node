@@ -2,5 +2,8 @@
 """
 BCI (Bitcoin Cloud Infrastructure)
 """
+import subprocess
 
 print ('bci running...')
+cmd = f"ls -al"
+subprocess.run(cmd, cwd='.', check=True, shell=True)
