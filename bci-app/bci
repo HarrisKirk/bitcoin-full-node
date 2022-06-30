@@ -12,6 +12,7 @@ linode_root_pass = os.getenv('LINODE_ROOT_PASSWORD')
 p = subprocess.run("cat ~/.ssh/id_rsa.pub", check=True, shell=True, capture_output=True)
 ssh_key = p.stdout.decode().rstrip()
 cmd = ["linode-cli", "linodes", "create", "--authorized_keys", ssh_key, "--root_pass", linode_root_pass, 
-    "--label", "hwk-newark", "--region", "us-east", "--image", "linode/ubuntu21.10", "--type", "g6-standard-1"]
-subprocess.run(cmd, cwd='.', check=True, shell=False)
+    "--label", "hwk-newark", "--region", "us-east", "--image", "linode/ubuntu21.10", "--type", "g6-standard-1", "--json"]
+p = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+print (p.stdout.decode())
 print ('bci done.')
