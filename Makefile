@@ -8,8 +8,8 @@ GIT_BRANCH = `git branch --all | grep "\*" | cut -d " " -f 2 | cut -c1-19`
 DOCKER_IMAGE_NAME = bci
 DOCKER_IMAGE = $(DOCKER_IMAGE_NAME):latest
 DOCKER_RUN_CMD = docker container run --dns=8.8.8.8 --rm --name=bci --workdir $(DISC_CONTAINER_WORKDIR) --user $(id -u):$(id -g)
-export BCI_SSH_KEY=`cat ~/.ssh/id_rsa.pub`
 DOCKER_ENV_STRING = -e LINODE_CLI_TOKEN -e LINODE_ROOT_PASSWORD -e BCI_SSH_KEY
+DOCKER_VOLUME_MOUNTS = -v ~/.ssh:/root/.ssh 
 
 help:
 	@echo ""
@@ -25,7 +25,7 @@ build: ## Basic build of image
 	docker build --quiet --tag $(DOCKER_IMAGE_NAME) . ;\
 
 cli: build ## Enter interactive shell to run linode-cli in the container.    
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_IMAGE) /bin/bash ;\
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash ;\
 
 list: build ## Run specific bci commands in the run.sh file 
 	$(DOCKER_RUN_CMD) $(DOCKER_ENV_STRING) $(DOCKER_IMAGE)  sh -c "linode-cli linodes list" ;\
@@ -34,5 +34,5 @@ clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\
 	sudo rm -rf output
 
-bci: build ## Enter interactive disc shell in the container.    Type 'bci' after command prompt
+bci: build ## Enter interactive disc shell in the container.    
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci";\
