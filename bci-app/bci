@@ -4,15 +4,24 @@ BCI (Bitcoin Cloud Infrastructure)
 """
 import subprocess
 import os
+import json
+import logging
 
 print ('bci running...')
-
+logging.basicConfig(
+    format="%(asctime)s %(levelname)s %(funcName)-25s() %(message)s ",
+    level=logging.INFO,
+    datefmt="%Y-%m-%d at %H:%M:%S",
+)
 
 linode_root_pass = os.getenv('LINODE_ROOT_PASSWORD')
 p = subprocess.run("cat ~/.ssh/id_rsa.pub", check=True, shell=True, capture_output=True)
 ssh_key = p.stdout.decode().rstrip()
 cmd = ["linode-cli", "linodes", "create", "--authorized_keys", ssh_key, "--root_pass", linode_root_pass, 
     "--label", "hwk-newark", "--region", "us-east", "--image", "linode/ubuntu21.10", "--type", "g6-standard-1", "--json"]
-p = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
-print (p.stdout.decode())
+completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+json_string = completed_process.stdout.decode()
+json_object = json.loads(json_string)
+logging.info(json.dumps(json_object, indent=2))
+
 print ('bci done.')
