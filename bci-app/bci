@@ -7,13 +7,14 @@ import os
 import json
 import logging
 
-print ('bci running...')
 logging.basicConfig(
     format="%(asctime)s %(levelname)s %(funcName)-25s() %(message)s ",
     level=logging.INFO,
     datefmt="%Y-%m-%d at %H:%M:%S",
 )
+logging.info ('bci running...')
 
+# Create linode
 linode_root_pass = os.getenv('LINODE_ROOT_PASSWORD')
 p = subprocess.run("cat ~/.ssh/id_rsa.pub", check=True, shell=True, capture_output=True)
 ssh_key = p.stdout.decode().rstrip()
@@ -22,6 +23,8 @@ cmd = ["linode-cli", "linodes", "create", "--authorized_keys", ssh_key, "--root_
 completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
 json_string = completed_process.stdout.decode()
 json_object = json.loads(json_string)
-logging.info(json.dumps(json_object, indent=2))
+logging.info (f"id = {json_object[0]['id']}")
 
-print ('bci done.')
+# TODO Attach a volume
+
+logging.info ('bci done.')
