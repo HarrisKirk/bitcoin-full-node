@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
 BCI (Bitcoin Cloud Infrastructure)
+Use linode-cli and shell to spin up and start bitcoin full node.
 """
 import subprocess
 import os
@@ -22,6 +23,10 @@ def execute_cli(cmd):
     json_object = json.loads(json_string)
     logging.debug(json.dumps(json_object, indent=2))
     return json_object
+
+def execute_sh(cmd):
+    logging.debug (' '.join(cmd))
+    completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
 
 def wait_for_running_state(linode_id):
     cmd = ["linode-cli", "linodes", "view", str(linode_id), "--json"]
@@ -49,6 +54,7 @@ cmd = ["linode-cli", "linodes", "create", "--authorized_keys", ssh_key, "--root_
     "--label", "hwk-newark", "--region", "us-east", "--image", "linode/ubuntu21.10", "--type", "g6-standard-1", "--json"]
 json_object = execute_cli(cmd)
 linode_id = json_object[0]['id']
+linode_ip = json_object[0]['ipv4'][0]
 logging.info (f"id = {linode_id} being provisioned")
 
 # Wait for running state
@@ -61,6 +67,27 @@ logging.info (f"Creating volume...")
 cmd = ["linode-cli", "volumes", "create", "--label", "btcvol", "--region", "us-east", 
     "--linode_id", str(linode_id), "--size", "500", "--json"]
 json_object = execute_cli(cmd)
-logging.info ('Volume created OK')
+vol_filesystem_path = json_object[0]['filesystem_path']
+vol_label = json_object[0]['label']
+logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
+
+# Mount volume on linode
+execute_sh(['ssh', '-o', "StrictHostKeyChecking=no", f"root@{linode_ip}"])
+execute_sh(['rsh', str(linode_ip), '-l', 'root', 'mkfs.ext4', f"/dev/disk/by-id/scsi-0Linode_Volume_{vol_label}"])
 
 logging.info ('bci done.')
+
+# rsh 173.255.225.119 -l root mkfs.ext4 "/dev/disk/by-id/scsi-0Linode_Volume_btcvol"
+# mkdir "/mnt/btcvol"
+# mount "/dev/disk/by-id/scsi-0Linode_Volume_btcvol" "/mnt/btcvol"
+
+
+
+
+
+
+
+
+
+
+
