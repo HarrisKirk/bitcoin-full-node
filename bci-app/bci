@@ -9,11 +9,37 @@ import logging
 import time
 
 logging.basicConfig(
-    format="%(asctime)s %(levelname)s %(funcName)-25s() %(message)s ",
-    level=logging.INFO,
+    format="%(asctime)s %(levelname)-9s %(funcName)-30s() %(message)s ",
+    level=logging.DEBUG,
     datefmt="%Y-%m-%d at %H:%M:%S",
 )
 logging.info ('bci running...')
+
+def execute_cli(cmd):
+    logging.debug (' '.join(cmd))
+    completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+    json_string = completed_process.stdout.decode()
+    json_object = json.loads(json_string)
+    logging.debug(json.dumps(json_object, indent=2))
+    return json_object
+
+def wait_for_running_state(linode_id):
+    cmd = ["linode-cli", "linodes", "view", str(linode_id), "--json"]
+    logging.debug (' '.join(cmd))
+
+    completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+    json_string = completed_process.stdout.decode()
+    json_object = json.loads(json_string)
+    linode_status = json_object[0]['status']
+
+    while linode_status != 'running':
+        time.sleep(10)
+        completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+        json_string = completed_process.stdout.decode()
+        json_object = json.loads(json_string)
+        linode_status = json_object[0]['status']
+        logging.info (f"Status = {linode_status}")
+
 
 # Create linode
 linode_root_pass = os.getenv('LINODE_ROOT_PASSWORD')
@@ -21,40 +47,20 @@ p = subprocess.run("cat ~/.ssh/id_rsa.pub", check=True, shell=True, capture_outp
 ssh_key = p.stdout.decode().rstrip()
 cmd = ["linode-cli", "linodes", "create", "--authorized_keys", ssh_key, "--root_pass", linode_root_pass, 
     "--label", "hwk-newark", "--region", "us-east", "--image", "linode/ubuntu21.10", "--type", "g6-standard-1", "--json"]
-logging.debug (' '.join(cmd))
-completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
-json_string = completed_process.stdout.decode()
-json_object = json.loads(json_string)
+json_object = execute_cli(cmd)
 linode_id = json_object[0]['id']
-logging.info (f"id = {linode_id} created")
+logging.info (f"id = {linode_id} being provisioned")
 
 # Wait for running state
-logging.info (f"Waiting for linode running state...")
-cmd = ["linode-cli", "linodes", "view", str(linode_id), "--json"]
-logging.debug (' '.join(cmd))
-
-completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
-json_string = completed_process.stdout.decode()
-json_object = json.loads(json_string)
-linode_status = json_object[0]['status']
-
-while linode_status != 'running':
-    time.sleep(15)
-    completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
-    json_string = completed_process.stdout.decode()
-    json_object = json.loads(json_string)
-    linode_status = json_object[0]['status']
-    logging.info (f"Status = {linode_status}")
+logging.info (f"Waiting for linode running status...")
+wait_for_running_state(linode_id)
 logging.info (f"linode instance {linode_id} status = running.")
 
-time.sleep(15) # to be sure its ready for volumes
 # Attach a volume
+logging.info (f"Creating volume...")
 cmd = ["linode-cli", "volumes", "create", "--label", "btcvol", "--region", "us-east", 
     "--linode_id", str(linode_id), "--size", "500", "--json"]
-logging.debug (' '.join(cmd))
-completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
-json_string = completed_process.stdout.decode()
-json_object = json.loads(json_string)
+json_object = execute_cli(cmd)
 logging.info ('Volume created OK')
 
 logging.info ('bci done.')
