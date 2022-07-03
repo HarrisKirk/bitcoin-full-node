@@ -18,25 +18,19 @@ help:
 	@echo ""
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-create: build ## Create a linode instance
-	$(DOCKER_RUN_CMD) $(DOCKER_ENV_STRING) $(DOCKER_IMAGE)  sh -c "linode-cli linodes create --authorized_keys '${BCI_SSH_KEY}' --root_pass ${LINODE_ROOT_PASSWORD} --label hwk-newark --region us-east --image linode/ubuntu21.10 --type g6-standard-1 " ;\
-
 build: ## Basic build of image
 	docker build --quiet --tag $(DOCKER_IMAGE_NAME) . ;\
 
 cli: build ## Enter interactive shell to run linode-cli in the container.    
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash ;\
 
-list: build ## Run specific bci commands in the run.sh file 
-	$(DOCKER_RUN_CMD) $(DOCKER_ENV_STRING) $(DOCKER_IMAGE)  sh -c "linode-cli linodes list" ;\
-
-clean: ## Remove all images and output folder
-	docker system prune	--force >/dev/null ;\
-	sudo rm -rf output
-
 bci: build ## Enter interactive disc shell in the container.    
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci logging.INFO";\
 
 bci_debug: build ## Enter interactive disc shell in the container.    
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci logging.DEBUG";\
+
+clean: ## Remove all images and output folder
+	docker system prune	--force >/dev/null ;\
+	sudo rm -rf output
 
