@@ -24,7 +24,8 @@ def execute_cli(cmd):
     logging.debug(json.dumps(json_object, indent=2))
     return json_object
 
-def execute_sh(cmd):
+def execute_ssh(linode_ip, remote_cmd):
+    cmd = ['ssh', '-o', 'StrictHostKeyChecking=no', f"root@{linode_ip}"] + remote_cmd
     logging.debug (' '.join(cmd))
     completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
 
@@ -73,9 +74,9 @@ time.sleep(20) # TODO replace with active poll
 logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
 
 # Mount volume on linode
-execute_sh(['ssh', '-o', 'StrictHostKeyChecking=no', f"root@{linode_ip}", 'mkfs.ext4', f"/dev/disk/by-id/scsi-0Linode_Volume_{vol_label}"])
-execute_sh(['ssh', '-o', 'StrictHostKeyChecking=no', f"root@{linode_ip}", 'mkdir', f"/mnt/{vol_label}"])
-execute_sh(['ssh', '-o', 'StrictHostKeyChecking=no', f"root@{linode_ip}", 'mount', f"/dev/disk/by-id/scsi-0Linode_Volume_{vol_label}", f"/mnt/{vol_label}"])
+execute_ssh(linode_ip, ['mkfs.ext4', f"/dev/disk/by-id/scsi-0Linode_Volume_{vol_label}"])
+execute_ssh(linode_ip, ['mkdir', f"/mnt/{vol_label}"])
+execute_ssh(linode_ip, ['mount', f"/dev/disk/by-id/scsi-0Linode_Volume_{vol_label}", f"/mnt/{vol_label}"])
 
 logging.info ('bci done.')
 
