@@ -51,6 +51,24 @@ def wait_for_running_state(linode_id):
         linode_status = json_object[0]['status']
         logging.info (f"Status = {linode_status}")
 
+def wait_for_volume_active(vol_id):
+    cmd = ["linode-cli", "volumes", "view", str(vol_id), "--json"]
+    logging.debug (' '.join(cmd))
+
+    completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+    json_string = completed_process.stdout.decode()
+    json_object = json.loads(json_string)
+    status = json_object[0]['status']
+    logging.info (f"Status = {status}")
+
+    while status != 'active':
+        time.sleep(5)
+        completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+        json_string = completed_process.stdout.decode()
+        json_object = json.loads(json_string)
+        status = json_object[0]['status']
+        logging.info (f"Status = {status}")
+    time.sleep(15) # Ensure volume is active on the linode ('active' status is not enough)
 
 # Create linode
 linode_root_pass = os.getenv('LINODE_ROOT_PASSWORD')
@@ -73,9 +91,10 @@ logging.info (f"Creating volume...")
 cmd = ["linode-cli", "volumes", "create", "--label", "btcvol", "--region", "us-east", 
     "--linode_id", str(linode_id), "--size", "500", "--json"]
 json_object = execute_cli(cmd)
+vol_id = json_object[0]['id']
 vol_filesystem_path = json_object[0]['filesystem_path']
 vol_label = json_object[0]['label']
-time.sleep(20) # TODO replace with active poll
+wait_for_volume_active(vol_id)
 logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
 
 issue_remote_vol_commands(linode_ip, vol_label)
