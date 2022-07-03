@@ -35,4 +35,8 @@ clean: ## Remove all images and output folder
 	sudo rm -rf output
 
 bci: build ## Enter interactive disc shell in the container.    
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci --log=INFO";\
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci logging.INFO";\
+
+bci_debug: build ## Enter interactive disc shell in the container.    
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci logging.DEBUG";\
+

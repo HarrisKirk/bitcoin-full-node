@@ -5,16 +5,18 @@ Use linode-cli and shell to spin up and start bitcoin full node.
 """
 import subprocess
 import os
+import sys
 import json
 import logging
 import time
 
+desired_log_level = sys.argv[1]
 logging.basicConfig(
     format="%(asctime)s %(levelname)-9s %(funcName)-30s() %(message)s ",
-    level=logging.DEBUG,
+    level=eval(desired_log_level),
     datefmt="%Y-%m-%d at %H:%M:%S",
 )
-logging.info ('bci running...')
+logging.info (f"bci running with log level set to '{desired_log_level}'")
 
 def execute_cli(cmd):
     logging.debug (' '.join(cmd))
@@ -49,7 +51,7 @@ def wait_for_running_state(linode_id):
         json_string = completed_process.stdout.decode()
         json_object = json.loads(json_string)
         linode_status = json_object[0]['status']
-        logging.info (f"Status = {linode_status}")
+        logging.debug (f"Status = {linode_status}")
 
 def wait_for_volume_active(vol_id):
     cmd = ["linode-cli", "volumes", "view", str(vol_id), "--json"]
@@ -59,7 +61,7 @@ def wait_for_volume_active(vol_id):
     json_string = completed_process.stdout.decode()
     json_object = json.loads(json_string)
     status = json_object[0]['status']
-    logging.info (f"Status = {status}")
+    logging.debug (f"Status = {status}")
 
     while status != 'active':
         time.sleep(5)
@@ -67,7 +69,7 @@ def wait_for_volume_active(vol_id):
         json_string = completed_process.stdout.decode()
         json_object = json.loads(json_string)
         status = json_object[0]['status']
-        logging.info (f"Status = {status}")
+        logging.debug (f"Status = {status}")
     time.sleep(15) # Ensure volume is active on the linode ('active' status is not enough)
 
 # Create linode
@@ -95,10 +97,8 @@ vol_id = json_object[0]['id']
 vol_filesystem_path = json_object[0]['filesystem_path']
 vol_label = json_object[0]['label']
 wait_for_volume_active(vol_id)
-logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
-
 issue_remote_vol_commands(linode_ip, vol_label)
-
+logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
 logging.info ('bci done.')
 
 
