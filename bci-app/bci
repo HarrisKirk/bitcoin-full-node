@@ -22,9 +22,12 @@ def execute_cli(cmd):
     logging.debug (' '.join(cmd))
     completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
     json_string = completed_process.stdout.decode()
-    json_object = json.loads(json_string)
-    logging.debug(json.dumps(json_object, indent=2))
-    return json_object
+    if json_string == '':
+        return None
+    else:
+        json_object = json.loads(json_string)
+        logging.debug(json.dumps(json_object, indent=2))
+        return json_object
 
 def execute_ssh(linode_ip, remote_cmd):
     cmd = ['ssh', '-o', 'StrictHostKeyChecking=no', f"root@{linode_ip}"] + remote_cmd
@@ -71,6 +74,70 @@ def wait_for_volume_active(vol_id):
         status = json_object[0]['status']
         logging.debug (f"Status = {status}")
     time.sleep(15) # Ensure volume is active on the linode ('active' status is not enough)
+
+def wait_for_detached_volume(vol_id):
+    cmd = ["linode-cli", "volumes", "view", str(vol_id), "--json"]
+    logging.debug (' '.join(cmd))
+
+    completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+    json_string = completed_process.stdout.decode()
+    json_object = json.loads(json_string)
+    linode_id = json_object[0]['linode_id']
+    logging.debug (f"linode_id = {linode_id}")
+
+    while linode_id != None:
+        time.sleep(5)
+        completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+        json_string = completed_process.stdout.decode()
+        json_object = json.loads(json_string)
+        linode_id = json_object[0]['linode_id']
+        logging.debug (f"linode_id = {linode_id}")
+
+
+def remove_existing_volumes():
+    cmd = ["linode-cli", "volumes", "list", "--json"]
+    logging.debug (cmd)
+    json_object = execute_cli(cmd)
+    volume_ids = [ vol['id'] for vol in json_object]
+    if len(volume_ids) == 0:
+        logging.info (f"No volumes found")
+    else:
+        logging.info (f"Found volume(s) = {volume_ids}")
+
+    for volume_id in volume_ids:
+        cmd = ["linode-cli", "volumes", "detach", str(volume_id), '--json']
+        json_object = execute_cli(cmd)
+        wait_for_detached_volume(volume_id)
+        logging.debug (f"Volume {volume_id} successfully detached.")
+
+    for volume_id in volume_ids:
+        cmd = ["linode-cli", "volumes", "delete", str(volume_id)]
+        json_object = execute_cli(cmd)
+        logging.info (f"Volume {volume_id} successfully deleted.")
+
+def remove_instances():
+    cmd = ["linode-cli", "linodes", "list", '--json']
+    json_object = execute_cli(cmd)
+    instances = json_object
+    if len(instances) == 0:
+        logging.info (f"No instances found")
+    else:
+        logging.info (f"Found {len(instances)} instance(s)")
+        for instance in instances:
+            cmd = ["linode-cli", "linodes", "delete", str(instance['id'])]
+            json_object = execute_cli(cmd)
+            time.sleep(2)
+            logging.info (f"Instance {instance['id']} deleted.")
+
+def setup():
+    """
+    Setup clean environment by removing existing volumes and instances
+    """
+    remove_existing_volumes()
+    remove_instances()
+
+setup()
+
 
 # Create linode
 linode_root_pass = os.getenv('LINODE_ROOT_PASSWORD')
