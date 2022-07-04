@@ -138,6 +138,11 @@ def setup():
     remove_existing_volumes()
     remove_instances()
 
+def prepare_for_bitcoin(linode_ip, vol_label):
+    execute_ssh(linode_ip, ['chmod', '-R', '770', f"/mnt/{vol_label}"])
+    execute_ssh(linode_ip, ['useradd', '-m', '--shell', '/bin/bash', 'bitcoinuser'])
+
+
 setup()
 
 
@@ -168,6 +173,8 @@ vol_label = json_object[0]['label']
 wait_for_volume_active(vol_id)
 issue_remote_vol_commands(linode_ip, vol_label)
 logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
+
+prepare_for_bitcoin(linode_ip, vol_label)
 
 end_time = time.perf_counter()
 logging.info (f"bci completed in {end_time - start_time:0.4f} seconds.")

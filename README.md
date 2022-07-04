@@ -20,22 +20,18 @@ sudo usermod -aG docker $USER   # to not require sudo
 * Docker installed with daemon running?
 * ps -ef | grep dockerd
 
-# Create a linode instance 
-Ensure all existing linode instances and volumes are removed via the Cloud Manager UI
+# Create the bitcoin cloud infrastructure (instance with attached storage volume)
 ```
+$ # CAUTION - all existing storage and nodes are deleted.
 $ make bci
 ```
 
 # Login to linode and perform these steps to create bitcoinuser
 ```
 $ ssh root@<ip> # obtain the IP on the Cloud Console
-$ chmod -R 777 /mnt/btc_node_data
+$ chmod -R 770 /mnt/btcvol
 $ useradd -m --shell /bin/bash bitcoinuser
-$ passwd bitcoinuser
 $ su --login bitcoinuser
-$ ssh-keygen # press Enter for all prompts
-$ cat ~/.ssh/id_rsa.pub
-Copy the ~/.ssh/id_rsa.pub to the github ssh keys section
 ```
 
 # Download and start the bitcoin full node
