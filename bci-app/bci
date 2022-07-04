@@ -10,6 +10,8 @@ import json
 import logging
 import time
 
+start_time = time.perf_counter()
+
 desired_log_level = sys.argv[1]
 logging.basicConfig(
     format="%(asctime)s %(levelname)-9s %(funcName)-30s() %(message)s ",
@@ -73,7 +75,7 @@ def wait_for_volume_active(vol_id):
         json_object = json.loads(json_string)
         status = json_object[0]['status']
         logging.debug (f"Status = {status}")
-    time.sleep(15) # Ensure volume is active on the linode ('active' status is not enough)
+    time.sleep(30) # Ensure volume is active on the linode ('active' status is not enough)
 
 def wait_for_detached_volume(vol_id):
     cmd = ["linode-cli", "volumes", "view", str(vol_id), "--json"]
@@ -166,8 +168,9 @@ vol_label = json_object[0]['label']
 wait_for_volume_active(vol_id)
 issue_remote_vol_commands(linode_ip, vol_label)
 logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
-logging.info ('bci done.')
 
+end_time = time.perf_counter()
+logging.info (f"bci completed in {end_time - start_time:0.4f} seconds.")
 
 
 
