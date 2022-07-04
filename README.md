@@ -21,23 +21,15 @@ sudo usermod -aG docker $USER   # to not require sudo
 
 
 # Create a linode instance 
+Ensure all existing linode instances and volumes are removed via the Cloud Manager UI
 ```
-$ make create
-$ make list # wait until instance is running
+$ make bci
 ```
 
-# Add a volume
-$ ssh root@<ip> # obtain the IP on the Cloud Console
-Create a volume of 500 GB using cloud console.
-Use the same region as the linode instance
-Specify the volume label as 'btc_node_data'
-
-As root, run the provided commands to create file system and mount point
-As root, chmod -R 777 /mnt/btc_node_data
-
-# Login to linode and perform these steps
+# Login to linode and perform these steps to create bitcoinuser
 ```
 $ ssh root@<ip> # obtain the IP on the Cloud Console
+$ chmod -R 777 /mnt/btc_node_data
 $ useradd -m --shell /bin/bash bitcoinuser
 $ passwd bitcoinuser
 $ su --login bitcoinuser
@@ -46,7 +38,7 @@ $ cat ~/.ssh/id_rsa.pub
 Copy the ~/.ssh/id_rsa.pub to the github ssh keys section
 ```
 
-# Monitor the bitcoin full node
+# Download and start the bitcoin full node
 ```
 $ mkdir github
 $ cd github
