@@ -141,7 +141,9 @@ def setup():
 def prepare_for_bitcoin(linode_ip, vol_label):
     execute_ssh(linode_ip, ['chmod', '-R', '770', f"/mnt/{vol_label}"])
     execute_ssh(linode_ip, ['useradd', '-m', '--shell', '/bin/bash', 'bitcoinuser'])
-
+    cmd = ['scp', '-o', 'StrictHostKeyChecking=no', '/opt/devops-bci/startnode.sh', f"root@{linode_ip}:/home/bitcoinuser"]
+    logging.debug (' '.join(cmd))
+    completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
 
 setup()
 
