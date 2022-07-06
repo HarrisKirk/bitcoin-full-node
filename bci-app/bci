@@ -10,7 +10,6 @@ import json
 import logging
 import time
 
-start_time = time.perf_counter()
 
 desired_log_level = sys.argv[1]
 logging.basicConfig(
@@ -143,29 +142,29 @@ def create_instance():
     json_object = execute_cli(cmd)
     linode_id = json_object[0]['id']
     linode_ip = json_object[0]['ipv4'][0]
-    logging.info (f"id = {linode_id} being provisioned")
-
-    # Wait for running state
-    logging.info (f"Waiting for linode running status...")
+    logging.info (f"id = {linode_id} being provisioned...")
     wait_for_running_state(linode_id)
     logging.info (f"linode instance {linode_id} status = running.")
     return linode_id, linode_ip
 
+def create_volume(linode_id):
+    logging.info (f"Creating volume...")
+    cmd = ["linode-cli", "volumes", "create", "--label", "btcvol", "--region", "us-east", 
+        "--linode_id", str(linode_id), "--size", "500", "--json"]
+    json_object = execute_cli(cmd)
+    vol_id = json_object[0]['id']
+    vol_filesystem_path = json_object[0]['filesystem_path']
+    vol_label = json_object[0]['label']
+    wait_for_volume_active(vol_id)
+    logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
+    return vol_label
+
+start_time = time.perf_counter()
+
 setup()
 linode_id, linode_ip = create_instance()
-
-# Create a volume
-logging.info (f"Creating volume...")
-cmd = ["linode-cli", "volumes", "create", "--label", "btcvol", "--region", "us-east", 
-    "--linode_id", str(linode_id), "--size", "500", "--json"]
-json_object = execute_cli(cmd)
-vol_id = json_object[0]['id']
-vol_filesystem_path = json_object[0]['filesystem_path']
-vol_label = json_object[0]['label']
-wait_for_volume_active(vol_id)
+vol_label = create_volume(linode_id)
 issue_remote_vol_commands(linode_ip, vol_label)
-logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
-
 prepare_for_bitcoin(linode_ip, vol_label)
 
 end_time = time.perf_counter()
