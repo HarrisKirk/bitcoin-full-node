@@ -10,6 +10,7 @@ DOCKER_IMAGE = $(DOCKER_IMAGE_NAME):latest
 DOCKER_RUN_CMD = docker container run --dns=8.8.8.8 --rm --name=bci --workdir $(DISC_CONTAINER_WORKDIR) --user $(id -u):$(id -g)
 DOCKER_ENV_STRING = -e LINODE_CLI_TOKEN -e LINODE_ROOT_PASSWORD 
 DOCKER_VOLUME_MOUNTS = -v ~/.ssh:/root/.ssh 
+linode_tags = dev
 
 help:
 	@echo ""
@@ -24,11 +25,11 @@ build: ## Basic build of bci image
 cli: build ## Enter interactive shell to run linode-cli in the container.    
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash ;\
 
-bci: build ## Enter interactive disc shell in the container.    
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci logging.INFO";\
+bci: build ## Run the bci app. Use linode_tags=<dev|test>
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci logging.INFO $(linode_tags)";\
 
-bci_debug: build ## Enter interactive disc shell in the container.    
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci logging.DEBUG";\
+bci_debug: build ## ## Run the bci app. Use linode_tags=<dev|test>
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci logging.DEBUG $(linode_tags)";\
 
 clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\

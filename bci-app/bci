@@ -10,13 +10,13 @@ import logging
 import time
 
 desired_log_level = sys.argv[1]
+linode_tags = [sys.argv[2]]
 logging.basicConfig(
     format="%(asctime)s %(levelname)-9s %(funcName)-30s() %(message)s ",
     level=eval(desired_log_level),
     datefmt="%Y-%m-%d at %H:%M:%S",
 )
-logging.debug(f"bci running with log level set to '{desired_log_level}'")
-
+logging.debug(f"bci running with log level set to '{desired_log_level}' and linode_tags {linode_tags}")
 
 def issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path):
     execute_ssh(linode_ip, ["mkfs.ext4", f"{vol_filesystem_path}"])
@@ -107,7 +107,7 @@ def remove_instances():
             logging.info(f"Instance {instance['id']} deleted.")
 
 
-def setup():
+def cleanup():
     """
     Setup clean environment by removing existing volumes and instances
     """
@@ -123,7 +123,7 @@ def prepare_for_bitcoin(linode_ip, vol_label):
     logging.info("Bitcoin software downloaded.")
 
 
-def create_instance():
+def create_instance(linode_tags):
     linode_root_pass = os.getenv("LINODE_ROOT_PASSWORD")
     ssh_key = execute_sh("cat ~/.ssh/id_rsa.pub")
     cmd = [
@@ -142,6 +142,8 @@ def create_instance():
         "linode/ubuntu21.10",
         "--type",
         "g6-standard-1",
+        "--tags",
+        ','.join(linode_tags),
         "--json",
     ]
     json_object = execute_cli(cmd)
@@ -180,11 +182,11 @@ def create_volume(linode_id):
 
 start_time = time.perf_counter()
 
-setup()
-linode_id, linode_ip = create_instance()
-vol_label, vol_filesystem_path = create_volume(linode_id)
-issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
-prepare_for_bitcoin(linode_ip, vol_label)
+cleanup()
+linode_id, linode_ip = create_instance(linode_tags)
+# vol_label, vol_filesystem_path = create_volume(linode_id, linode_tag)
+# issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
+# prepare_for_bitcoin(linode_ip, vol_label)
 
 end_time = time.perf_counter()
 logging.info(f"bci completed in {end_time - start_time:0.4f} seconds.")
