@@ -17,10 +17,10 @@ logging.basicConfig(
 )
 logging.debug (f"bci running with log level set to '{desired_log_level}'")
 
-def issue_remote_vol_commands(linode_ip, vol_label):
-    execute_ssh(linode_ip, ['mkfs.ext4', f"/dev/disk/by-id/scsi-0Linode_Volume_{vol_label}"])
+def issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path):
+    execute_ssh(linode_ip, ['mkfs.ext4', f"{vol_filesystem_path}"])
     execute_ssh(linode_ip, ['mkdir', f"/mnt/{vol_label}"])
-    execute_ssh(linode_ip, ['mount', f"/dev/disk/by-id/scsi-0Linode_Volume_{vol_label}", f"/mnt/{vol_label}"])
+    execute_ssh(linode_ip, ['mount', f"{vol_filesystem_path}", f"/mnt/{vol_label}"])
 
 def wait_for_running_state(linode_id):
     cmd = ["linode-cli", "linodes", "view", str(linode_id), "--json"]
@@ -112,7 +112,7 @@ def prepare_for_bitcoin(linode_ip, vol_label):
     execute_ssh(linode_ip, ['chmod', '-R', '770', f"/mnt/{vol_label}"])
     execute_ssh(linode_ip, ['useradd', '-m', '--shell', '/bin/bash', 'bitcoinuser'])
     execute_scp(['/opt/devops-bci/startnode.sh', f"root@{linode_ip}:/home/bitcoinuser"])
-    logging.info(execute_ssh(linode_ip, ['/home/bitcoinuser/startnode.sh']))
+    logging.debug(execute_ssh(linode_ip, ['/home/bitcoinuser/startnode.sh']))
     logging.info('Bitcoin software downloaded.')
 
 
@@ -138,15 +138,15 @@ def create_volume(linode_id):
     vol_filesystem_path = json_object[0]['filesystem_path']
     vol_label = json_object[0]['label']
     wait_for_volume_active(vol_id)
-    logging.info (f"Volume created OK with filesystem_path {vol_filesystem_path} and label '{vol_label}'")
-    return vol_label
+    logging.info (f"Volume '{vol_label}' created OK with filesystem_path {vol_filesystem_path}")
+    return vol_label, vol_filesystem_path
 
 start_time = time.perf_counter()
 
 setup()
 linode_id, linode_ip = create_instance()
-vol_label = create_volume(linode_id)
-issue_remote_vol_commands(linode_ip, vol_label)
+vol_label, vol_filesystem_path = create_volume(linode_id)
+issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
 prepare_for_bitcoin(linode_ip, vol_label)
 
 end_time = time.perf_counter()
