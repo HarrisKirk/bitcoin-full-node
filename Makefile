@@ -34,3 +34,5 @@ clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\
 	sudo rm -rf output
 
+format: ## format the python code consistently
+	$(DOCKER_RUN_CMD) -v $(PWD)/bci-app:$(DISC_CONTAINER_WORKDIR) $(DOCKER_IMAGE) black --verbose --line-length=120 $(DISC_CONTAINER_WORKDIR) ;\
