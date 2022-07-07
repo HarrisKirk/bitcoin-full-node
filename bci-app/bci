@@ -155,7 +155,7 @@ def create_instance(linode_tags):
     return linode_id, linode_ip
 
 
-def create_volume(linode_id):
+def create_volume(linode_id, linode_tags):
     logging.info(f"Creating volume...")
     cmd = [
         "linode-cli",
@@ -169,6 +169,8 @@ def create_volume(linode_id):
         str(linode_id),
         "--size",
         "500",
+        "--tags",
+        ','.join(linode_tags),        
         "--json",
     ]
     json_object = execute_cli(cmd)
@@ -184,9 +186,9 @@ start_time = time.perf_counter()
 
 cleanup()
 linode_id, linode_ip = create_instance(linode_tags)
-# vol_label, vol_filesystem_path = create_volume(linode_id, linode_tag)
-# issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
-# prepare_for_bitcoin(linode_ip, vol_label)
+vol_label, vol_filesystem_path = create_volume(linode_id, linode_tags)
+issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
+prepare_for_bitcoin(linode_ip, vol_label)
 
 end_time = time.perf_counter()
 logging.info(f"bci completed in {end_time - start_time:0.4f} seconds.")
