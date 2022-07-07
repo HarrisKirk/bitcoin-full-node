@@ -16,7 +16,7 @@ logging.basicConfig(
     level=eval(desired_log_level),
     datefmt="%Y-%m-%d at %H:%M:%S",
 )
-logging.debug(f"bci running with log level set to '{desired_log_level}' and linode_tags {linode_tags}")
+logging.debug(f"bci running with log level set to '{desired_log_level}' and linode_tags {','.join(linode_tags)}")
 
 def issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path):
     execute_ssh(linode_ip, ["mkfs.ext4", f"{vol_filesystem_path}"])
@@ -70,15 +70,15 @@ def wait_for_detached_volume(vol_id):
         logging.debug(f"linode_id = {linode_id}")
 
 
-def remove_existing_volumes():
-    cmd = ["linode-cli", "volumes", "list", "--json"]
+def remove_existing_volumes(linode_tags):
+    cmd = ["linode-cli", "volumes", "list", "--tags", ','.join(linode_tags), "--json"]
     logging.debug(cmd)
     json_object = execute_cli(cmd)
     volume_ids = [vol["id"] for vol in json_object]
     if len(volume_ids) == 0:
-        logging.info(f"No volumes found")
+        logging.info(f"No volumes found having tags '{','.join(linode_tags)}'")
     else:
-        logging.info(f"Found volume(s) = {volume_ids}")
+        logging.info(f"Found {len(volume_ids)} volume(s) having tags '{','.join(linode_tags)}': {volume_ids}")
 
     for volume_id in volume_ids:
         cmd = ["linode-cli", "volumes", "detach", str(volume_id), "--json"]
@@ -92,14 +92,14 @@ def remove_existing_volumes():
         logging.info(f"Volume {volume_id} successfully deleted.")
 
 
-def remove_instances():
-    cmd = ["linode-cli", "linodes", "list", "--json"]
+def remove_instances(linode_tags):
+    cmd = ["linode-cli", "linodes", "list", "--tags", ','.join(linode_tags), "--json"]
     json_object = execute_cli(cmd)
     instances = json_object
     if len(instances) == 0:
-        logging.info(f"No instances found")
+        logging.info(f"No instances found having tags '{','.join(linode_tags)}'")
     else:
-        logging.info(f"Found {len(instances)} instance(s)")
+        logging.info(f"Found {len(instances)} instance(s) having tags '{','.join(linode_tags)}'")
         for instance in instances:
             cmd = ["linode-cli", "linodes", "delete", str(instance["id"])]
             json_object = execute_cli(cmd)
@@ -107,12 +107,12 @@ def remove_instances():
             logging.info(f"Instance {instance['id']} deleted.")
 
 
-def cleanup():
+def cleanup(linode_tags):
     """
     Setup clean environment by removing existing volumes and instances
     """
-    remove_existing_volumes()
-    remove_instances()
+    remove_existing_volumes(linode_tags)
+    remove_instances(linode_tags)
 
 
 def prepare_for_bitcoin(linode_ip, vol_label):
@@ -135,7 +135,7 @@ def create_instance(linode_tags):
         "--root_pass",
         linode_root_pass,
         "--label",
-        "hwk-newark",
+        f"btcinstance-{','.join(linode_tags)}",
         "--region",
         "us-east",
         "--image",
@@ -162,7 +162,7 @@ def create_volume(linode_id, linode_tags):
         "volumes",
         "create",
         "--label",
-        "btcvol",
+        f"btcvol-{','.join(linode_tags)}",
         "--region",
         "us-east",
         "--linode_id",
@@ -184,7 +184,7 @@ def create_volume(linode_id, linode_tags):
 
 start_time = time.perf_counter()
 
-cleanup()
+cleanup(linode_tags)
 linode_id, linode_ip = create_instance(linode_tags)
 vol_label, vol_filesystem_path = create_volume(linode_id, linode_tags)
 issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
