@@ -21,6 +21,7 @@ def execute_ssh(linode_ip, remote_cmd):
     cmd = ['ssh', '-o', 'StrictHostKeyChecking=no', f"root@{linode_ip}"] + remote_cmd
     logging.debug (' '.join(cmd))
     completed_process = subprocess.run(cmd, cwd='.', check=True, shell=False, capture_output=True)
+    return completed_process.stdout.decode()
 
 def execute_scp(remote_cmd):
     cmd = ['scp', '-o', 'StrictHostKeyChecking=no'] + remote_cmd

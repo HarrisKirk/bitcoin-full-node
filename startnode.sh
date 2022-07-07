@@ -14,8 +14,8 @@ echo "chain=test" > ~/.bitcoin/bitcoin.conf
 echo "[INFO] bitcoin.conf configured"
 
 cd ${bitcoin_core}/bitcoin-${version}/bin
-./bitcoind -daemon
-sleep 10
-./bitcoin-cli getblockchaininfo # repeat until initialblockdownload is false
+#./bitcoind -daemon
+#sleep 10
+#./bitcoin-cli getblockchaininfo # repeat until initialblockdownload is false
 
 echo "Finished"
