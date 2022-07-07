@@ -10,13 +10,13 @@ import logging
 import time
 
 desired_log_level = sys.argv[1]
-linode_tags = [sys.argv[2]]
+linode_tags = sys.argv[2]
 logging.basicConfig(
     format="%(asctime)s %(levelname)-9s %(funcName)-30s() %(message)s ",
     level=eval(desired_log_level),
     datefmt="%Y-%m-%d at %H:%M:%S",
 )
-logging.debug(f"bci running with log level set to '{desired_log_level}' and linode_tags {','.join(linode_tags)}")
+logging.debug(f"bci running with log level set to '{desired_log_level}' and linode_tags {linode_tags}")
 
 def issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path):
     execute_ssh(linode_ip, ["mkfs.ext4", f"{vol_filesystem_path}"])
@@ -43,7 +43,6 @@ def wait_for_volume_ready():
 
 def wait_for_volume_active(vol_id):
     cmd = ["linode-cli", "volumes", "view", str(vol_id), "--json"]
-    logging.debug(" ".join(cmd))
     json_object = execute_cli(cmd)
     status = json_object[0]["status"]
     logging.debug(f"Status = {status}")
@@ -71,14 +70,14 @@ def wait_for_detached_volume(vol_id):
 
 
 def remove_existing_volumes(linode_tags):
-    cmd = ["linode-cli", "volumes", "list", "--tags", ','.join(linode_tags), "--json"]
+    cmd = ["linode-cli", "volumes", "list", "--tags", f"{linode_tags}", "--json"]
     logging.debug(cmd)
     json_object = execute_cli(cmd)
     volume_ids = [vol["id"] for vol in json_object]
     if len(volume_ids) == 0:
-        logging.info(f"No volumes found having tags '{','.join(linode_tags)}'")
+        logging.info(f"No volumes found having tags '{linode_tags}'")
     else:
-        logging.info(f"Found {len(volume_ids)} volume(s) having tags '{','.join(linode_tags)}': {volume_ids}")
+        logging.info(f"Found {len(volume_ids)} volume(s) having tags '{linode_tags}': {volume_ids}")
 
     for volume_id in volume_ids:
         cmd = ["linode-cli", "volumes", "detach", str(volume_id), "--json"]
@@ -93,13 +92,13 @@ def remove_existing_volumes(linode_tags):
 
 
 def remove_instances(linode_tags):
-    cmd = ["linode-cli", "linodes", "list", "--tags", ','.join(linode_tags), "--json"]
+    cmd = ["linode-cli", "linodes", "list", "--tags", linode_tags, "--json"]
     json_object = execute_cli(cmd)
     instances = json_object
     if len(instances) == 0:
-        logging.info(f"No instances found having tags '{','.join(linode_tags)}'")
+        logging.info(f"No instances found having tags '{linode_tags}'")
     else:
-        logging.info(f"Found {len(instances)} instance(s) having tags '{','.join(linode_tags)}'")
+        logging.info(f"Found {len(instances)} instance(s) having tags '{linode_tags}'")
         for instance in instances:
             cmd = ["linode-cli", "linodes", "delete", str(instance["id"])]
             json_object = execute_cli(cmd)
@@ -135,7 +134,7 @@ def create_instance(linode_tags):
         "--root_pass",
         linode_root_pass,
         "--label",
-        f"btcinstance-{','.join(linode_tags)}",
+        f"btcinstance-{linode_tags}",
         "--region",
         "us-east",
         "--image",
@@ -143,7 +142,7 @@ def create_instance(linode_tags):
         "--type",
         "g6-standard-1",
         "--tags",
-        ','.join(linode_tags),
+        linode_tags,
         "--json",
     ]
     json_object = execute_cli(cmd)
@@ -162,7 +161,7 @@ def create_volume(linode_id, linode_tags):
         "volumes",
         "create",
         "--label",
-        f"btcvol-{','.join(linode_tags)}",
+        f"btcvol-{linode_tags}",
         "--region",
         "us-east",
         "--linode_id",
@@ -170,7 +169,7 @@ def create_volume(linode_id, linode_tags):
         "--size",
         "500",
         "--tags",
-        ','.join(linode_tags),        
+        linode_tags, 
         "--json",
     ]
     json_object = execute_cli(cmd)
@@ -191,4 +190,4 @@ issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
 prepare_for_bitcoin(linode_ip, vol_label)
 
 end_time = time.perf_counter()
-logging.info(f"bci completed in {end_time - start_time:0.4f} seconds.")
+logging.info(f"bci completed in {round(end_time - start_time)} seconds.")
