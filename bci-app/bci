@@ -119,9 +119,9 @@ def launch_bitcoind(linode_ip, vol_label):
     execute_ssh(linode_ip, 'root', ["useradd", "-m", "--shell", "/bin/bash", "bitcoinuser"])
     execute_ssh(linode_ip, 'root', ["chown", "bitcoinuser", "-R", f"/mnt/{vol_label}"])
     execute_scp(["/opt/devops-bci/startnode.sh", f"root@{linode_ip}:/home/bitcoinuser"])
-    # console_out = execute_ssh(linode_ip, 'root', ['-t', 'sudo', 'su', 'bitcoinuser', '-c', "/home/bitcoinuser/startnode.sh"])
-    # logging.debug(console_out)
-    # logging.info("Bitcoin node running.")
+    console_out = execute_ssh(linode_ip, 'root', ['-t', 'sudo', 'su', 'bitcoinuser', '-c', "/home/bitcoinuser/startnode.sh"])
+    logging.info(console_out)
+    logging.info("Bitcoin node running.")
 
 
 def create_instance(linode_tags):
