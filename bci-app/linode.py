@@ -1,12 +1,13 @@
-from bci_common import execute_cli, execute_ssh, execute_scp, execute_sh
+from common import execute_cli, execute_ssh, execute_scp, execute_sh
 import os
 import logging
 import time
 
+
 def issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path):
-    execute_ssh(linode_ip, 'root', ["mkfs.ext4", f"{vol_filesystem_path}"])
-    execute_ssh(linode_ip, 'root', ["mkdir", f"/mnt/{vol_label}"])
-    execute_ssh(linode_ip, 'root', ["mount", f"{vol_filesystem_path}", f"/mnt/{vol_label}"])
+    execute_ssh(linode_ip, "root", ["mkfs.ext4", f"{vol_filesystem_path}"])
+    execute_ssh(linode_ip, "root", ["mkdir", f"/mnt/{vol_label}"])
+    execute_ssh(linode_ip, "root", ["mount", f"{vol_filesystem_path}", f"/mnt/{vol_label}"])
 
 
 def wait_for_running_state(linode_id):
@@ -100,11 +101,13 @@ def cleanup(linode_tags):
 
 
 def launch_bitcoind(linode_ip, vol_label):
-    execute_ssh(linode_ip, 'root', ["chmod", "-R", "770", f"/mnt/{vol_label}"])
-    execute_ssh(linode_ip, 'root', ["useradd", "-m", "--shell", "/bin/bash", "bitcoinuser"])
-    execute_ssh(linode_ip, 'root', ["chown", "bitcoinuser", "-R", f"/mnt/{vol_label}"])
+    execute_ssh(linode_ip, "root", ["chmod", "-R", "770", f"/mnt/{vol_label}"])
+    execute_ssh(linode_ip, "root", ["useradd", "-m", "--shell", "/bin/bash", "bitcoinuser"])
+    execute_ssh(linode_ip, "root", ["chown", "bitcoinuser", "-R", f"/mnt/{vol_label}"])
     execute_scp(["/opt/devops-bci/startnode.sh", f"root@{linode_ip}:/home/bitcoinuser"])
-    console_out = execute_ssh(linode_ip, 'root', ['-t', 'sudo', 'su', 'bitcoinuser', '-c', "/home/bitcoinuser/startnode.sh"])
+    console_out = execute_ssh(
+        linode_ip, "root", ["-t", "sudo", "su", "bitcoinuser", "-c", "/home/bitcoinuser/startnode.sh"]
+    )
     logging.info(console_out)
     logging.info("Bitcoin node running.")
 
@@ -135,7 +138,8 @@ def create_instance(linode_tags):
     json_object = execute_cli(cmd)
     linode_id = json_object[0]["id"]
     linode_ip = json_object[0]["ipv4"][0]
-    logging.info(f"Linode id '{linode_id}' being provisioned.")
+    linode_status = json_object[0]["status"]
+    logging.info(f"Linode id '{linode_id}' status is '{linode_status}'.")
     wait_for_running_state(linode_id)
     logging.info(f"linode id '{linode_id}' status is 'running'.")
     return linode_id, linode_ip
@@ -156,7 +160,7 @@ def create_volume(linode_id, linode_tags):
         "--size",
         "500",
         "--tags",
-        linode_tags, 
+        linode_tags,
         "--json",
     ]
     json_object = execute_cli(cmd)
@@ -164,6 +168,5 @@ def create_volume(linode_id, linode_tags):
     vol_filesystem_path = json_object[0]["filesystem_path"]
     vol_label = json_object[0]["label"]
     wait_for_volume_active(vol_id)
-    logging.info(f"Volume '{vol_label}' created OK with filesystem_path {vol_filesystem_path}")
+    logging.info(f"'{vol_label}' created at '{vol_filesystem_path}'")
     return vol_label, vol_filesystem_path
-
