@@ -19,8 +19,8 @@ def execute_cli(cmd):
         return json_object
 
 
-def execute_ssh(linode_ip, remote_cmd):
-    cmd = ["ssh", "-o", "StrictHostKeyChecking=no", f"root@{linode_ip}"] + remote_cmd
+def execute_ssh(linode_ip, user, remote_cmd):
+    cmd = ["ssh", "-o", "StrictHostKeyChecking=no", f"{user}@{linode_ip}"] + remote_cmd
     logging.debug(" ".join(cmd))
     completed_process = subprocess.run(cmd, cwd=".", check=True, shell=False, capture_output=True)
     return completed_process.stdout.decode()

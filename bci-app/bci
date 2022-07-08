@@ -19,9 +19,9 @@ logging.basicConfig(
 logging.debug(f"bci running with log level set to '{desired_log_level}' and linode_tags {linode_tags}")
 
 def issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path):
-    execute_ssh(linode_ip, ["mkfs.ext4", f"{vol_filesystem_path}"])
-    execute_ssh(linode_ip, ["mkdir", f"/mnt/{vol_label}"])
-    execute_ssh(linode_ip, ["mount", f"{vol_filesystem_path}", f"/mnt/{vol_label}"])
+    execute_ssh(linode_ip, 'root', ["mkfs.ext4", f"{vol_filesystem_path}"])
+    execute_ssh(linode_ip, 'root', ["mkdir", f"/mnt/{vol_label}"])
+    execute_ssh(linode_ip, 'root', ["mount", f"{vol_filesystem_path}", f"/mnt/{vol_label}"])
 
 
 def wait_for_running_state(linode_id):
@@ -114,12 +114,14 @@ def cleanup(linode_tags):
     remove_instances(linode_tags)
 
 
-def prepare_for_bitcoin(linode_ip, vol_label):
-    execute_ssh(linode_ip, ["chmod", "-R", "770", f"/mnt/{vol_label}"])
-    execute_ssh(linode_ip, ["useradd", "-m", "--shell", "/bin/bash", "bitcoinuser"])
+def launch_bitcoind(linode_ip, vol_label):
+    execute_ssh(linode_ip, 'root', ["chmod", "-R", "770", f"/mnt/{vol_label}"])
+    execute_ssh(linode_ip, 'root', ["useradd", "-m", "--shell", "/bin/bash", "bitcoinuser"])
+    execute_ssh(linode_ip, 'root', ["chown", "bitcoinuser", "-R", f"/mnt/{vol_label}"])
     execute_scp(["/opt/devops-bci/startnode.sh", f"root@{linode_ip}:/home/bitcoinuser"])
-    logging.debug(execute_ssh(linode_ip, ["/home/bitcoinuser/startnode.sh"]))
-    logging.info("Bitcoin software downloaded.")
+    # console_out = execute_ssh(linode_ip, 'root', ['-t', 'sudo', 'su', 'bitcoinuser', '-c', "/home/bitcoinuser/startnode.sh"])
+    # logging.debug(console_out)
+    # logging.info("Bitcoin node running.")
 
 
 def create_instance(linode_tags):
@@ -148,9 +150,9 @@ def create_instance(linode_tags):
     json_object = execute_cli(cmd)
     linode_id = json_object[0]["id"]
     linode_ip = json_object[0]["ipv4"][0]
-    logging.info(f"id = {linode_id} being provisioned...")
+    logging.info(f"Linode id '{linode_id}' being provisioned.")
     wait_for_running_state(linode_id)
-    logging.info(f"linode instance {linode_id} status = running.")
+    logging.info(f"linode id '{linode_id}' status is 'running'.")
     return linode_id, linode_ip
 
 
@@ -187,7 +189,7 @@ cleanup(linode_tags)
 linode_id, linode_ip = create_instance(linode_tags)
 vol_label, vol_filesystem_path = create_volume(linode_id, linode_tags)
 issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
-prepare_for_bitcoin(linode_ip, vol_label)
+launch_bitcoind(linode_ip, vol_label)
 
 end_time = time.perf_counter()
 logging.info(f"bci completed in {round(end_time - start_time)} seconds.")
