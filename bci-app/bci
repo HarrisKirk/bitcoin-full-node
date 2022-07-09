@@ -4,6 +4,7 @@ BCI (Bitcoin Cloud Infrastructure)
 Use linode-cli and shell to spin up and start bitcoin full node.
 """
 import linode
+import bitcoin
 import sys
 import time
 import logging
@@ -24,7 +25,7 @@ linode.cleanup(linode_tags)
 linode_id, linode_ip = linode.create_instance(linode_tags)
 vol_label, vol_filesystem_path = linode.create_volume(linode_id, linode_tags)
 linode.issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
-linode.launch_bitcoind(linode_ip, 'test', vol_label)
+bitcoin.launch_bitcoind(linode_ip, 'test', vol_label)
 
 end_time = time.perf_counter()
 logging.info(f"bci completed in {round(end_time - start_time)} seconds.")
