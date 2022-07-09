@@ -3,7 +3,9 @@ bitcoin_core=${HOME}/bitcoin_core
 vol_label=btc_node_data
 
 rm -rf $downloads $bitcoin_core
-mkdir $downloads $bitcoin_core ${HOME}/.bitcoin
+rm ${HOME}/.bitcoin/bitcoin.conf
+rm -rf ${HOME}/datadir
+mkdir $downloads $bitcoin_core ${HOME}/.bitcoin ${HOME}/datadir
 
 version=23.0
 wget --output-document=${downloads}/SHA256SUMS.asc https://bitcoincore.org/bin/bitcoin-core-${version}/SHA256SUMS.asc
