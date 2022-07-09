@@ -10,14 +10,15 @@ wget --output-document=${downloads}/SHA256SUMS.asc https://bitcoincore.org/bin/b
 wget --output-document=${downloads}/bitcoin-${version}-x86_64-linux-gnu.tar.gz https://bitcoincore.org/bin/bitcoin-core-${version}/bitcoin-${version}-x86_64-linux-gnu.tar.gz
 tar -zxf ${downloads}/bitcoin-${version}-x86_64-linux-gnu.tar.gz --directory $bitcoin_core
 echo "[INFO] Extract completed into ${bitcoin_core}"
-echo "chain=test" > ${HOME}/.bitcoin/bitcoin.conf
-echo "[INFO] ${HOME}/.bitcoin/bitcoin.conf configured"
+
+# echo "chain=test" > ${HOME}/.bitcoin/bitcoin.conf
+# echo "[INFO] ${HOME}/.bitcoin/bitcoin.conf configured"
 
 cd ${bitcoin_core}/bitcoin-${version}/bin
 echo "Launching bitcoind from $(pwd)..."
-./bitcoind -daemon
+./bitcoind  -datadir=${HOME}/datadir -chain=test -daemon
 sleep 20
-./bitcoin-cli getblockchaininfo # repeat until initialblockdownload is false
+./bitcoin-cli -datadir=${HOME}/datadir -chain=test getblockchaininfo # repeat until initialblockdownload is false
 # ./bitcoin-cli help
 ls -al
 
