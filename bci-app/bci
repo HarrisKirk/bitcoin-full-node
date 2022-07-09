@@ -11,19 +11,20 @@ import logging
 
 desired_log_level = sys.argv[1]
 linode_tags = sys.argv[2]
+vol_label = f"btcvol-{linode_tags}"
 logging.basicConfig(
     format="%(asctime)s %(levelname)-9s %(funcName)-30s() %(message)s ",
     level=eval(desired_log_level),
     datefmt="%Y-%m-%d at %H:%M:%S",
 )
-logging.debug(f"bci running with log level set to '{desired_log_level}' and linode_tags {linode_tags}")
+logging.debug(f"bci started with log level set to '{desired_log_level}' and linode_tags {linode_tags}")
 
 
 start_time = time.perf_counter()
 
 linode.cleanup(linode_tags)
 linode_id, linode_ip = linode.create_instance(linode_tags)
-vol_label, vol_filesystem_path = linode.create_volume(linode_id, linode_tags)
+vol_filesystem_path = linode.create_volume(linode_id, linode_tags, vol_label)
 linode.issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
 bitcoin.launch_bitcoind(linode_ip, 'test', vol_label)
 

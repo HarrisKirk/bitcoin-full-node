@@ -129,18 +129,18 @@ def create_instance(linode_tags):
     linode_status = json_object[0]["status"]
     logging.info(f"Linode id '{linode_id}' status is '{linode_status}'.")
     wait_for_running_state(linode_id)
-    logging.info(f"linode id '{linode_id}' status is 'running'.")
+    logging.info(f"Linode id '{linode_id}' status is 'running'.")
     return linode_id, linode_ip
 
 
-def create_volume(linode_id, linode_tags):
+def create_volume(linode_id, linode_tags, vol_label):
     logging.info(f"Creating volume...")
     cmd = [
         "linode-cli",
         "volumes",
         "create",
         "--label",
-        f"btcvol-{linode_tags}",
+        vol_label,
         "--region",
         "us-east",
         "--linode_id",
@@ -154,7 +154,6 @@ def create_volume(linode_id, linode_tags):
     json_object = execute_cli(cmd)
     vol_id = json_object[0]["id"]
     vol_filesystem_path = json_object[0]["filesystem_path"]
-    vol_label = json_object[0]["label"]
     wait_for_volume_active(vol_id)
     logging.info(f"'{vol_label}' created at '{vol_filesystem_path}'")
-    return vol_label, vol_filesystem_path
+    return vol_filesystem_path
