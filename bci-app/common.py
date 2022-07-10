@@ -33,5 +33,6 @@ def execute_scp(remote_cmd):
 
 
 def execute_sh(cmd):
+    logging.debug(" ".join(cmd))    
     p = subprocess.run(cmd, check=True, shell=True, capture_output=True)
     return p.stdout.decode().rstrip()

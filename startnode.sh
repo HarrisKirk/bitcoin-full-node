@@ -1,21 +1,18 @@
-# if [ $# -ne 2 ]; then
-#   echo "Running $0 with arguments '$@'"
-#   echo 1>&2 "Usage:  $0 [chain] [datadir]"
-#   echo 1>&2 "Example $0 test /mnt/data"
-#   exit 3
-# fi
-# bitcoin_conf_chain=$1
-# bitcoin_conf_datadir=$2
-
-bitcoin_conf_chain=test
-bitcoin_conf_datadir=/mnt/btcvol-dev
+echo "Running $0 with arguments '$@'..."
+if [ $# -ne 2 ]; then
+  echo 1>&2 "Usage:  $0 [chain] [datadir]"
+  echo 1>&2 "Example $0 test /mnt/data"
+  exit 3
+fi
+bitcoin_conf_chain=$1
+bitcoin_conf_datadir=$2
 
 downloads=${HOME}/downloads
 bitcoin_core=${HOME}/bitcoin_core
 
 rm -rf $downloads $bitcoin_core
 rm ${HOME}/.bitcoin/bitcoin.conf
-rm -rf ${bitcoin_conf_datadir}
+rm -rf ${bitcoin_conf_datadir}/*
 mkdir $downloads $bitcoin_core ${HOME}/.bitcoin ${bitcoin_conf_datadir}
 
 version=23.0
