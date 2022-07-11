@@ -26,7 +26,7 @@ logging.basicConfig(
     level=eval(desired_log_level),
     datefmt="%Y-%m-%d at %H:%M:%S",
 )
-logging.debug(f"bci started with log level set to '{desired_log_level}' and env '{env}'")
+logging.debug(f"Environment '{env}' started with log level set to '{desired_log_level}' and values '{environments[env]}'")
 
 
 start_time = time.perf_counter()
