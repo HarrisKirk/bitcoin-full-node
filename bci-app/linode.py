@@ -144,7 +144,7 @@ def create_instance(linode_tags):
     return linode_id, linode_ip
 
 
-def create_volume(linode_id, linode_tags, vol_label):
+def create_volume(linode_id, linode_tags, vol_label, vol_size_gb):
     """Create volume and attach to the linode id"""
     logging.info(f"Creating volume...")
     cmd = [
@@ -158,7 +158,7 @@ def create_volume(linode_id, linode_tags, vol_label):
         "--linode_id",
         str(linode_id),
         "--size",
-        "500",
+        vol_size_gb,
         "--tags",
         linode_tags,
         "--json",

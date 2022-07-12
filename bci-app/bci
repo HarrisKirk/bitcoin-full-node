@@ -13,9 +13,9 @@ desired_log_level = sys.argv[1]
 env = sys.argv[2]
 
 environments = {
-    "dev": {"chain": "test"},
-    "test": {"chain": "test"},
-    "prod": {"chain": "main"},
+    "dev": {"chain": "test", "vol_size_gb": "50"},
+    "test": {"chain": "test", "vol_size_gb": "50"},
+    "prod": {"chain": "main", "vol_size_gb": "500"},
 }
 
 if env not in environments:
@@ -36,7 +36,7 @@ start_time = time.perf_counter()
 vol_label = f"btcvol-{env}"
 linode.cleanup(env)
 linode_id, linode_ip = linode.create_instance(env)
-vol_filesystem_path = linode.create_volume(linode_id, env, vol_label)
+vol_filesystem_path = linode.create_volume(linode_id, env, vol_label, environments[env]['vol_size_gb'])
 linode.issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
 bitcoin.launch_bitcoind(linode_ip, chain, vol_label)
 
