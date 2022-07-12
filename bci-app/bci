@@ -8,37 +8,39 @@ import bitcoin
 import sys
 import time
 import logging
+import typer
 
-desired_log_level = sys.argv[1]
-env = sys.argv[2]
+def main(log_level: str, env: str):
+    environments = {
+        "dev": {"chain": "test", "vol_size_gb": "50"},
+        "test": {"chain": "test", "vol_size_gb": "50"},
+        "prod": {"chain": "main", "vol_size_gb": "500"},
+    }
 
-environments = {
-    "dev": {"chain": "test", "vol_size_gb": "50"},
-    "test": {"chain": "test", "vol_size_gb": "50"},
-    "prod": {"chain": "main", "vol_size_gb": "500"},
-}
-
-if env not in environments:
-    raise ValueError(f"'{env}' must be one of {environments.keys()}")
-chain = environments[env]["chain"]
-logging.basicConfig(
-    format="%(asctime)s %(levelname)-9s %(funcName)-30s() %(message)s ",
-    level=eval(desired_log_level),
-    datefmt="%Y-%m-%d at %H:%M:%S",
-)
-logging.debug(
-    f"Environment '{env}' started with log level set to '{desired_log_level}' and values '{environments[env]}'"
-)
+    if env not in environments:
+        raise ValueError(f"'{env}' must be one of {environments.keys()}")
+    chain = environments[env]["chain"]
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)-9s %(funcName)-30s() %(message)s ",
+        level=eval(log_level),
+        datefmt="%Y-%m-%d at %H:%M:%S",
+    )
+    logging.debug(
+        f"Environment '{env}' started with log level set to '{log_level}' and values '{environments[env]}'"
+    )
 
 
-start_time = time.perf_counter()
+    start_time = time.perf_counter()
 
-vol_label = f"btcvol-{env}"
-linode.cleanup(env)
-linode_id, linode_ip = linode.create_instance(env)
-vol_filesystem_path = linode.create_volume(linode_id, env, vol_label, environments[env]['vol_size_gb'])
-linode.issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
-bitcoin.launch_bitcoind(linode_ip, chain, vol_label)
+    vol_label = f"btcvol-{env}"
+    linode.cleanup(env)
+    linode_id, linode_ip = linode.create_instance(env)
+    vol_filesystem_path = linode.create_volume(linode_id, env, vol_label, environments[env]['vol_size_gb'])
+    linode.issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
+    bitcoin.launch_bitcoind(linode_ip, chain, vol_label)
 
-end_time = time.perf_counter()
-logging.info(f"bci completed in {round(end_time - start_time)} seconds.")
+    end_time = time.perf_counter()
+    logging.info(f"bci completed in {round(end_time - start_time)} seconds.")
+
+if __name__ == "__main__":
+    typer.run(main)
