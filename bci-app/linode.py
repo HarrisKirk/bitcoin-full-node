@@ -1,3 +1,6 @@
+"""
+Functions that provision the linode instances and volumes
+"""
 from common import execute_cli, execute_ssh, execute_scp, execute_sh
 import os
 import logging
@@ -5,12 +8,14 @@ import time
 
 
 def issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path):
+    """Connect the volume to a running linode"""
     execute_ssh(linode_ip, "root", ["mkfs.ext4", f"{vol_filesystem_path}"])
     execute_ssh(linode_ip, "root", ["mkdir", f"/mnt/{vol_label}"])
     execute_ssh(linode_ip, "root", ["mount", f"{vol_filesystem_path}", f"/mnt/{vol_label}"])
 
 
 def wait_for_running_state(linode_id):
+    """Poll the linode instance until running state"""
     cmd = ["linode-cli", "linodes", "view", str(linode_id), "--json"]
     logging.debug(" ".join(cmd))
     json_object = execute_cli(cmd)
@@ -24,10 +29,12 @@ def wait_for_running_state(linode_id):
 
 
 def wait_for_volume_ready():
-    time.sleep(30)  # Ensure volume is ready to be mounted (status = 'active' is not sufficient)
+    """Ensure volume is ready to be mounted (status = 'active' is not sufficient)"""
+    time.sleep(30)
 
 
 def wait_for_volume_active(vol_id):
+    """Poll volume until 'active'"""
     cmd = ["linode-cli", "volumes", "view", str(vol_id), "--json"]
     json_object = execute_cli(cmd)
     status = json_object[0]["status"]
@@ -42,6 +49,7 @@ def wait_for_volume_active(vol_id):
 
 
 def wait_for_detached_volume(vol_id):
+    """Poll volume until no longer associated with a linode instance"""
     cmd = ["linode-cli", "volumes", "view", str(vol_id), "--json"]
     logging.debug(" ".join(cmd))
     json_object = execute_cli(cmd)
@@ -56,6 +64,7 @@ def wait_for_detached_volume(vol_id):
 
 
 def remove_existing_volumes(linode_tags):
+    """Find volumes by tag then detach and delete them"""
     cmd = ["linode-cli", "volumes", "list", "--tags", f"{linode_tags}", "--json"]
     logging.debug(cmd)
     json_object = execute_cli(cmd)
@@ -78,6 +87,7 @@ def remove_existing_volumes(linode_tags):
 
 
 def remove_instances(linode_tags):
+    """Find instances by tag and delete them"""
     cmd = ["linode-cli", "linodes", "list", "--tags", linode_tags, "--json"]
     json_object = execute_cli(cmd)
     instances = json_object
@@ -101,6 +111,7 @@ def cleanup(linode_tags):
 
 
 def create_instance(linode_tags):
+    """Create a linode instance and inject the current ssh key into it"""
     linode_root_pass = os.getenv("LINODE_ROOT_PASSWORD")
     ssh_key = execute_sh("cat ~/.ssh/id_rsa.pub")
     cmd = [
@@ -134,6 +145,7 @@ def create_instance(linode_tags):
 
 
 def create_volume(linode_id, linode_tags, vol_label):
+    """Create volume and attach to the linode id"""
     logging.info(f"Creating volume...")
     cmd = [
         "linode-cli",
