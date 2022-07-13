@@ -12,6 +12,11 @@ import typer
 
 app = typer.Typer()
 
+environments = {
+    "dev": {"chain": "test", "vol_size_gb": "50"},
+    "test": {"chain": "test", "vol_size_gb": "50"},
+    "prod": {"chain": "main", "vol_size_gb": "500"},
+}
 
 def set_logger(log_level):
     logging.basicConfig(
@@ -23,7 +28,7 @@ def set_logger(log_level):
 
 @app.command()
 def delete(
-    env: str = typer.Argument(..., help="The environment to deploy"),
+    env: str = typer.Argument(..., help=f"The environment to deploy: [{', '.join(environments)}]"),
     log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
 ):
     set_logger(log_level)
@@ -33,15 +38,10 @@ def delete(
 
 @app.command()
 def create(
-    env: str = typer.Argument(..., help="The environment to deploy"),
+    env: str = typer.Argument(..., help=f"The environment to deploy: [{', '.join(environments)}]"),
     log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
 ):
     set_logger(log_level)
-    environments = {
-        "dev": {"chain": "test", "vol_size_gb": "50"},
-        "test": {"chain": "test", "vol_size_gb": "50"},
-        "prod": {"chain": "main", "vol_size_gb": "500"},
-    }
 
     if env not in environments:
         raise ValueError(f"'{env}' must be one of {environments.keys()}")
