@@ -29,7 +29,7 @@ bci: build ## Run the bci app. Use linode_tags=<dev|test> (tag must be at least 
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci create $(linode_tags)";\
 
 bci_debug: build ## ## Run the bci app. Use linode_tags=<dev|test> (tag must be at least 3 chars)
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci --log-level DEBUG create $(linode_tags)";\
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci create --log-level DEBUG $(linode_tags)";\
 
 clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\

@@ -33,5 +33,5 @@ cd ${bitcoin_core}/bitcoin-${version}/bin
 echo "Launching bitcoind from $(pwd)..."
 ./bitcoind  -daemon
 sleep 20
-./bitcoin-cli getblockchaininfo # repeat until initialblockdownload is false
+
 echo "Finished"

@@ -19,4 +19,10 @@ def launch_bitcoind(linode_ip, chain, vol_label):
         ["-t", "sudo", "-u", "bitcoinuser", f"/home/bitcoinuser/startnode.sh", chain, f"/mnt/{vol_label}"],
     )
     logging.info(console_out)
+    console_out = execute_ssh(
+        linode_ip,
+        "root",
+        ["-t", "sudo", "-u", "bitcoinuser", f"/home/bitcoinuser/bitcoin_core/bitcoin-23.0/bin/bitcoin-cli", "getblockchaininfo"],
+    )
+    logging.info(console_out)
     logging.info("Bitcoin node running.")
