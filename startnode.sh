@@ -1,3 +1,4 @@
+set -e
 echo "Running $0 with arguments '$@'..."
 if [ $# -ne 2 ]; then
   echo 1>&2 "Usage:  $0 [chain] [datadir]"
@@ -11,9 +12,9 @@ downloads=${HOME}/downloads
 bitcoin_core=${HOME}/bitcoin_core
 
 rm -rf $downloads $bitcoin_core
-rm ${HOME}/.bitcoin/bitcoin.conf
+rm -f ${HOME}/.bitcoin/bitcoin.conf
 rm -rf ${bitcoin_conf_datadir}/*
-mkdir $downloads $bitcoin_core ${HOME}/.bitcoin ${bitcoin_conf_datadir}
+mkdir -p $downloads $bitcoin_core ${HOME}/.bitcoin ${bitcoin_conf_datadir}
 
 version=23.0
 wget --output-document=${downloads}/SHA256SUMS.asc https://bitcoincore.org/bin/bitcoin-core-${version}/SHA256SUMS.asc
