@@ -22,14 +22,20 @@ def set_logger(log_level):
 
 
 @app.command()
-def delete(env: str, log_level: str = typer.Option("INFO", help="INFO or DEBUG")):
+def delete(
+    env: str = typer.Argument(..., help="The environment to deploy"),
+    log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
+):
     set_logger(log_level)
     logging.info(f"Deleting environment '{env}'")
     linode.cleanup(env)
 
 
 @app.command()
-def create(env: str, log_level: str = typer.Option("INFO", help="INFO or DEBUG")):
+def create(
+    env: str = typer.Argument(..., help="The environment to deploy"),
+    log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
+):
     set_logger(log_level)
     environments = {
         "dev": {"chain": "test", "vol_size_gb": "50"},
