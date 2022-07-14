@@ -26,7 +26,6 @@ def set_logger(log_level):
         datefmt="%Y-%m-%d at %H:%M:%S",
     )
 
-
 @app.command()
 def delete(
     env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
@@ -69,8 +68,8 @@ def status(
     log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
 ):
     set_logger(log_level)
-
-    ibl, sod = bitcoin.get_blockchain_info('96.126.105.174')
+    linode_ip = linode.get_ip(env)
+    ibl, sod = bitcoin.get_blockchain_info(linode_ip)
     logging.info(f"initialblockdownload = {ibl} with size on disk = {sod}")
 
 

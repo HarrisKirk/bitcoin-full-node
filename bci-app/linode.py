@@ -169,3 +169,7 @@ def create_volume(linode_id, linode_tags, vol_label, vol_size_gb):
     wait_for_volume_active(vol_id)
     logging.info(f"'{vol_label}' created at '{vol_filesystem_path}'")
     return vol_filesystem_path
+
+
+def get_ip(env):
+    return '96.126.105.174'
