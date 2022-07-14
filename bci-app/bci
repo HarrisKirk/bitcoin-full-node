@@ -68,9 +68,12 @@ def status(
     log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
 ):
     set_logger(log_level)
+    if env not in environments:
+        raise ValueError(f"'{env}' must be one of {environments.keys()}")
     linode_ip = linode.get_ip(env)
-    ibl, sod = bitcoin.get_blockchain_info(linode_ip)
-    logging.info(f"initialblockdownload = {ibl} with size on disk = {sod}")
+    if linode_ip:
+        ibl, sod = bitcoin.get_blockchain_info(linode_ip)
+        logging.info(f"initialblockdownload = {ibl} with size on disk = {sod}")
 
 
 if __name__ == "__main__":
