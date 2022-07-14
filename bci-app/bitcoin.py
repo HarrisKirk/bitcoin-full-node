@@ -3,6 +3,7 @@ Functions that install and launch a bitcoin full node.   Assumes the cloud infra
 """
 from common import execute_ssh, execute_scp
 import logging
+import json
 
 
 def launch_bitcoind(linode_ip, chain, vol_label):
@@ -18,11 +19,25 @@ def launch_bitcoind(linode_ip, chain, vol_label):
         "root",
         ["-t", "sudo", "-u", "bitcoinuser", f"/home/bitcoinuser/startnode.sh", chain, f"/mnt/{vol_label}"],
     )
-    logging.info(console_out)
+    logging.debug(console_out)
+    logging.info("Bitcoin node running.")
+
+
+def get_blockchain_info(linode_ip):
     console_out = execute_ssh(
         linode_ip,
         "root",
-        ["-t", "sudo", "-u", "bitcoinuser", f"/home/bitcoinuser/bitcoin_core/bitcoin-23.0/bin/bitcoin-cli", "getblockchaininfo"],
+        [
+            "-t",
+            "sudo",
+            "-u",
+            "bitcoinuser",
+            f"/home/bitcoinuser/bitcoin_core/bitcoin-23.0/bin/bitcoin-cli",
+            "getblockchaininfo",
+        ],
     )
-    logging.info(console_out)
-    logging.info("Bitcoin node running.")
+    logging.debug(f"json from bitcoin-cli: {console_out}")
+    json_object = json.loads(console_out)
+    ibl = json_object["initialblockdownload"]
+    sod = json_object["size_on_disk"]
+    return ibl, sod
