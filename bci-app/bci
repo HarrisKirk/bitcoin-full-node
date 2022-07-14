@@ -29,7 +29,7 @@ def set_logger(log_level):
 
 @app.command()
 def delete(
-    env: str = typer.Argument(..., help=f"The environment to deploy: [{', '.join(environments)}]"),
+    env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
     log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
 ):
     set_logger(log_level)
@@ -39,7 +39,7 @@ def delete(
 
 @app.command()
 def create(
-    env: str = typer.Argument(..., help=f"The environment to deploy: [{', '.join(environments)}]"),
+    env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
     log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
 ):
     set_logger(log_level)
@@ -61,6 +61,17 @@ def create(
 
     end_time = time.perf_counter()
     logging.info(f"bci completed in {round(end_time - start_time)} seconds.")
+
+
+@app.command()
+def status(
+    env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
+    log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
+):
+    set_logger(log_level)
+
+    ibl, sod = bitcoin.get_blockchain_info('96.126.105.174')
+    logging.info(f"initialblockdownload = {ibl} with size on disk = {sod}")
 
 
 if __name__ == "__main__":
