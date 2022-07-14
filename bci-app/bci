@@ -9,6 +9,7 @@ import sys
 import time
 import logging
 import typer
+from rich import print
 
 app = typer.Typer(help="Bitcoin Cloud Infrastructure cli")
 
@@ -83,7 +84,7 @@ def status(
     linode_ip = linode.get_ip(env)
     if linode_ip:
         ibl, sod = bitcoin.get_blockchain_info(linode_ip)
-        logging.info(f"initialblockdownload = {ibl} with size on disk = {sod}")
+        print(f"initialblockdownload = {ibl} with size on disk = {sod}")
 
 
 if __name__ == "__main__":
