@@ -10,7 +10,7 @@ import time
 import logging
 import typer
 
-app = typer.Typer()
+app = typer.Typer(help="Bitcoin Cloud Infrastructure cli")
 
 environments = {
     "dev": {"chain": "test", "vol_size_gb": "50"},
@@ -29,8 +29,11 @@ def set_logger(log_level):
 @app.command()
 def delete(
     env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
-    log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
+    log_level: str = typer.Option("INFO", help="DEBUG, INFO, WARNING, ERROR or CRITICAL"),
 ):
+    """
+    Delete the instances and volumes associated with the env
+    """
     set_logger(log_level)
     logging.info(f"Deleting environment '{env}'")
     linode.cleanup(env)
@@ -39,8 +42,11 @@ def delete(
 @app.command()
 def create(
     env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
-    log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
+    log_level: str = typer.Option("INFO", help="DEBUG, INFO, WARNING, ERROR or CRITICAL"),
 ):
+    """
+    Create the instances and volumes associated with the env
+    """
     set_logger(log_level)
     if env not in environments:
         raise ValueError(f"'{env}' must be one of {environments.keys()}")
@@ -65,8 +71,12 @@ def create(
 @app.command()
 def status(
     env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
-    log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
+    log_level: str = typer.Option("INFO", help="DEBUG, INFO, WARNING, ERROR or CRITICAL"),
 ):
+    """
+    Print the status of the bitcoin node in env
+    """
+
     set_logger(log_level)
     if env not in environments:
         raise ValueError(f"'{env}' must be one of {environments.keys()}")
