@@ -26,10 +26,9 @@ def set_logger(log_level):
         datefmt="%Y-%m-%d at %H:%M:%S",
     )
 
-
 @app.command()
 def delete(
-    env: str = typer.Argument(..., help=f"The environment to deploy: [{', '.join(environments)}]"),
+    env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
     log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
 ):
     set_logger(log_level)
@@ -39,7 +38,7 @@ def delete(
 
 @app.command()
 def create(
-    env: str = typer.Argument(..., help=f"The environment to deploy: [{', '.join(environments)}]"),
+    env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
     log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
 ):
     set_logger(log_level)
@@ -61,6 +60,20 @@ def create(
 
     end_time = time.perf_counter()
     logging.info(f"bci completed in {round(end_time - start_time)} seconds.")
+
+
+@app.command()
+def status(
+    env: str = typer.Argument(..., help=f"The environment: [{', '.join(environments)}]"),
+    log_level: str = typer.Option("INFO", help="INFO or DEBUG"),
+):
+    set_logger(log_level)
+    if env not in environments:
+        raise ValueError(f"'{env}' must be one of {environments.keys()}")
+    linode_ip = linode.get_ip(env)
+    if linode_ip:
+        ibl, sod = bitcoin.get_blockchain_info(linode_ip)
+        logging.info(f"initialblockdownload = {ibl} with size on disk = {sod}")
 
 
 if __name__ == "__main__":

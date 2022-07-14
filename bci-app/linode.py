@@ -169,3 +169,19 @@ def create_volume(linode_id, linode_tags, vol_label, vol_size_gb):
     wait_for_volume_active(vol_id)
     logging.info(f"'{vol_label}' created at '{vol_filesystem_path}'")
     return vol_filesystem_path
+
+
+def get_ip(env):
+    """Get the ip address for the linode instance in the env"""
+    cmd = ["linode-cli", "linodes", "list", "--tags", env, "--json"]
+    json_object = execute_cli(cmd)
+    instances = json_object
+    if len(instances) == 0:
+        logging.warn(f"No instances found having tags '{env}'")
+        return None
+    else:
+        logging.debug(f"Found {len(instances)} instance(s) having tags '{env}'")
+        instance = instances[0] # Assume only 1 instance with the env tag
+        ip = instance["ipv4"][0]
+        return ip
+
