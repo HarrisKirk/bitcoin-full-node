@@ -13,12 +13,24 @@ from rich import print
 from enum import Enum, auto
 
 app = typer.Typer(help="Bitcoin Cloud Infrastructure cli")
-HELP_MSG_ENV = "The bitcoin node environment"
+
+class LogLevel(str, Enum):
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+    def get_help_msg():
+        return "Log only messages at or below this level"
 
 class BtcEnvironment(str, Enum):
     DEV = "DEV"
     TEST = "TEST"
     PROD = "PROD"
+
+    def get_help_msg():
+        return "The bitcoin node environment (linode instance with volume)"
 
 environments = {
     BtcEnvironment.DEV.value: {"chain": "test", "vol_size_gb": "50"},
@@ -35,8 +47,8 @@ def set_logger(log_level):
 
 @app.command()
 def delete(
-    env: BtcEnvironment = typer.Argument(..., help=HELP_MSG_ENV, case_sensitive=False),
-    log_level: str = typer.Option("INFO", help="DEBUG, INFO, WARNING, ERROR or CRITICAL"),
+    env: BtcEnvironment = typer.Argument(..., help=BtcEnvironment.get_help_msg(), case_sensitive=False),
+    log_level: LogLevel = typer.Option(LogLevel.INFO.value, help=LogLevel.get_help_msg()),
 ):
     """
     Delete instances and volumes associated with the env
@@ -49,8 +61,8 @@ def delete(
 
 @app.command()
 def create(
-    env: BtcEnvironment = typer.Argument(..., help=HELP_MSG_ENV, case_sensitive=False),
-    log_level: str = typer.Option("INFO", help="DEBUG, INFO, WARNING, ERROR or CRITICAL"),
+    env: BtcEnvironment = typer.Argument(..., help=BtcEnvironment.get_help_msg(), case_sensitive=False),
+    log_level: LogLevel = typer.Option(LogLevel.INFO.value, help=LogLevel.get_help_msg()),
 ):
     """
     Create instances and volumes associated with the env
@@ -77,8 +89,8 @@ def create(
 
 @app.command()
 def status(
-    env: BtcEnvironment = typer.Argument(..., help=HELP_MSG_ENV, case_sensitive=False),
-    log_level: str = typer.Option("INFO", help="DEBUG, INFO, WARNING, ERROR or CRITICAL"),
+    env: BtcEnvironment = typer.Argument(..., help=BtcEnvironment.get_help_msg(), case_sensitive=False),
+    log_level: LogLevel = typer.Option(LogLevel.INFO.value, help=LogLevel.get_help_msg()),
 ):
     """
     Print status of the bitcoin node in env
