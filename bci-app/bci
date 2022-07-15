@@ -13,6 +13,7 @@ from rich import print
 from enum import Enum, auto
 
 app = typer.Typer(help="Bitcoin Cloud Infrastructure cli")
+HELP_MSG_ENV = "The bitcoin node environment"
 
 class BtcEnvironment(str, Enum):
     DEV = "DEV"
@@ -20,9 +21,9 @@ class BtcEnvironment(str, Enum):
     PROD = "PROD"
 
 environments = {
-    BtcEnvironment.DEV.name: {"chain": "test", "vol_size_gb": "50"},
-    BtcEnvironment.TEST.name: {"chain": "test", "vol_size_gb": "50"},
-    BtcEnvironment.PROD.name: {"chain": "main", "vol_size_gb": "500"},
+    BtcEnvironment.DEV.value: {"chain": "test", "vol_size_gb": "50"},
+    BtcEnvironment.TEST.value: {"chain": "test", "vol_size_gb": "50"},
+    BtcEnvironment.PROD.value: {"chain": "main", "vol_size_gb": "500"},
 }
 
 def set_logger(log_level):
@@ -34,27 +35,27 @@ def set_logger(log_level):
 
 @app.command()
 def delete(
-    env: BtcEnvironment = typer.Argument(..., help=f"The bitcoin node environment", case_sensitive=False),
+    env: BtcEnvironment = typer.Argument(..., help=HELP_MSG_ENV, case_sensitive=False),
     log_level: str = typer.Option("INFO", help="DEBUG, INFO, WARNING, ERROR or CRITICAL"),
 ):
     """
-    Delete the instances and volumes associated with the env
+    Delete instances and volumes associated with the env
     """
     set_logger(log_level)
-    env = env.name
-    logging.info(f"Deleting environment '{env}' with chain '{environments[env]['chain']}'")
+    env = env.value
+    logging.info(f"Deleting environment '{env}' referencing chain '{environments[env]['chain']}'")
     linode.cleanup(env)
 
 
 @app.command()
 def create(
-    env: BtcEnvironment = typer.Argument(..., help=f"The bitcoin node environment", case_sensitive=False),
+    env: BtcEnvironment = typer.Argument(..., help=HELP_MSG_ENV, case_sensitive=False),
     log_level: str = typer.Option("INFO", help="DEBUG, INFO, WARNING, ERROR or CRITICAL"),
 ):
     """
-    Create the instances and volumes associated with the env
+    Create instances and volumes associated with the env
     """
-    env = env.name
+    env = env.value
     set_logger(log_level)
     chain = environments[env]["chain"]
     logging.info(f"'{env}' started with values '{environments[env]}'")
@@ -76,15 +77,15 @@ def create(
 
 @app.command()
 def status(
-    env: BtcEnvironment = typer.Argument(..., help=f"The bitcoin node environment", case_sensitive=False),
+    env: BtcEnvironment = typer.Argument(..., help=HELP_MSG_ENV, case_sensitive=False),
     log_level: str = typer.Option("INFO", help="DEBUG, INFO, WARNING, ERROR or CRITICAL"),
 ):
     """
-    Print the status of the bitcoin node in env
+    Print status of the bitcoin node in env
     """
 
     set_logger(log_level)
-    env = env.name
+    env = env.value
     linode_ip = linode.get_ip(env)
     if linode_ip:
         ibl, sod = bitcoin.get_blockchain_info(linode_ip)
