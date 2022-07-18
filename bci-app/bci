@@ -101,7 +101,7 @@ def status(
     linode_ip = linode.get_ip(env)
     if linode_ip:
         ibl, sod = bitcoin.get_blockchain_info(linode_ip)
-        print(f"initialblockdownload = {ibl} with size on disk = " + "{:,}".format(sod) + " bytes" )
+        print(f"Full node on IP '{linode_ip}': initialblockdownload = {ibl} with size on disk = " + "{:,}".format(sod) + " bytes" )
 
 
 if __name__ == "__main__":
