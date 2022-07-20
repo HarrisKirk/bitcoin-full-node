@@ -2,7 +2,6 @@
 Functions that provision the linode instances and volumes
 """
 from common import execute_cli, execute_ssh, execute_scp, execute_sh
-import os
 import logging
 import time
 
@@ -110,10 +109,8 @@ def cleanup(linode_tags):
     remove_instances(linode_tags)
 
 
-def create_instance(linode_tags):
+def create_instance(linode_tags, linode_root_pass, ssh_key):
     """Create a linode instance and inject the current ssh key into it"""
-    linode_root_pass = os.getenv("LINODE_ROOT_PASSWORD")
-    ssh_key = execute_sh("cat ~/.ssh/id_rsa.pub")
     cmd = [
         "linode-cli",
         "linodes",

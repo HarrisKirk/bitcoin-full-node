@@ -3,6 +3,7 @@
 BCI (Bitcoin Cloud Infrastructure)
 Use linode-cli and shell to spin up and start bitcoin full node.
 """
+from common import execute_sh
 import linode
 import bitcoin
 import sys
@@ -11,6 +12,7 @@ import logging
 import typer
 from rich import print
 from enum import Enum, auto
+import os
 
 app = typer.Typer(help="Bitcoin Cloud Infrastructure cli")
 
@@ -70,13 +72,14 @@ def create(
     env = env.value
     set_logger(log_level)
     chain = environments[env]["chain"]
+    linode_root_pass, ssh_key = get_keys()
     logging.info(f"'{env}' started with values '{environments[env]}'")
 
     start_time = time.perf_counter()
 
     vol_label = f"btcvol-{env}"
     linode.cleanup(env)
-    linode_id, linode_ip = linode.create_instance(env)
+    linode_id, linode_ip = linode.create_instance(env, linode_root_pass, ssh_key)
     vol_filesystem_path = linode.create_volume(linode_id, env, vol_label, environments[env]["vol_size_gb"])
     linode.issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
     bitcoin.launch_bitcoind(linode_ip, chain, vol_label)
@@ -103,6 +106,13 @@ def status(
         ibl, sod = bitcoin.get_blockchain_info(linode_ip)
         print(f"Full node on IP '{linode_ip}': initialblockdownload = {ibl} with size on disk = " + "{:,}".format(sod) + " bytes" )
 
+def get_keys():
+    """
+    Get the root password and ssh keys for creating linode.
+    """
+    linode_root_pass = os.getenv("LINODE_ROOT_PASSWORD")
+    ssh_key = execute_sh("cat ~/.ssh/id_rsa.pub")    
+    return linode_root_pass, ssh_key
 
 if __name__ == "__main__":
     app()
