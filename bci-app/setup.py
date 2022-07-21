@@ -27,7 +27,7 @@ class SecretMgr:
             print(f"[italic red3]Please create {public_key_file} by running ssh-keygen[/italic red3]")
             raise SystemExit(2)
         else:
-            return ssh_rsa_public_key
+            return ssh_rsa_public_key.rstrip()
 
     def __verify_cli_api_key__(self):
         api_key = os.getenv("LINODE_CLI_TOKEN")
