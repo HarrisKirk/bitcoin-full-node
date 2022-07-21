@@ -4,6 +4,7 @@ BCI (Bitcoin Cloud Infrastructure)
 Use linode-cli and shell to spin up and start bitcoin full node.
 """
 from common import execute_sh
+from setup import SecretMgr
 import linode
 import bitcoin
 import sys
@@ -15,6 +16,7 @@ from enum import Enum, auto
 import os
 
 app = typer.Typer(help="Bitcoin Cloud Infrastructure cli")
+secret_mgr = SecretMgr()
 
 class LogLevel(str, Enum):
     DEBUG = "DEBUG"
@@ -72,7 +74,7 @@ def create(
     env = env.value
     set_logger(log_level)
     chain = environments[env]["chain"]
-    linode_root_pass, ssh_key = get_keys()
+    linode_root_pass, ssh_key = secret_mgr.get_keys()
     logging.info(f"'{env}' started with values '{environments[env]}'")
 
     start_time = time.perf_counter()
@@ -106,13 +108,6 @@ def status(
         ibl, sod = bitcoin.get_blockchain_info(linode_ip)
         print(f"Full node on IP '{linode_ip}': initialblockdownload = {ibl} with size on disk = " + "{:,}".format(sod) + " bytes" )
 
-def get_keys():
-    """
-    Get the root password and ssh keys for creating linode.
-    """
-    linode_root_pass = os.getenv("LINODE_ROOT_PASSWORD")
-    ssh_key = execute_sh("cat ~/.ssh/id_rsa.pub")    
-    return linode_root_pass, ssh_key
 
 if __name__ == "__main__":
     app()
