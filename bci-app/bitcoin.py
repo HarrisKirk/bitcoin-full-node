@@ -6,9 +6,9 @@ import logging
 import json
 
 
-def launch_bitcoind(linode_ip, chain, vol_label):
+def launch_bitcoind(linode_ip, chain, vol_label, version):
     """Configure user and permissions for bitcoin"""
-    logging.info(f"Launching bitcoind with chain={chain} and datadir=/mnt/{vol_label}")
+    logging.info(f"Launching bitcoind version {version} with chain={chain} and datadir=/mnt/{vol_label}")
     execute_ssh(linode_ip, "root", ["chmod", "-R", "770", f"/mnt/{vol_label}"])
     execute_ssh(linode_ip, "root", ["useradd", "-m", "--shell", "/bin/bash", "bitcoinuser"])
     execute_ssh(linode_ip, "root", ["chown", "bitcoinuser:bitcoinuser", "-R", f"/mnt/{vol_label}"])
@@ -17,7 +17,7 @@ def launch_bitcoind(linode_ip, chain, vol_label):
     console_out = execute_ssh(
         linode_ip,
         "root",
-        ["-t", "sudo", "-u", "bitcoinuser", f"/home/bitcoinuser/startnode.sh", chain, f"/mnt/{vol_label}"],
+        ["-t", "sudo", "-u", "bitcoinuser", f"/home/bitcoinuser/startnode.sh", version, chain, f"/mnt/{vol_label}"],
     )
     logging.debug(console_out)
     logging.info("Bitcoin node running.")

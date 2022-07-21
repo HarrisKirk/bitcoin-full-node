@@ -1,12 +1,13 @@
 set -e
 echo "Running $0 with arguments '$@'..."
-if [ $# -ne 2 ]; then
-  echo 1>&2 "Usage:  $0 [chain] [datadir]"
-  echo 1>&2 "Example $0 test /mnt/data"
+if [ $# -ne 3 ]; then
+  echo 1>&2 "Usage:  $0 [version] [chain] [datadir]"
+  echo 1>&2 "Example $0 23.0 test /mnt/data"
   exit 3
 fi
-bitcoin_conf_chain=$1
-bitcoin_conf_datadir=$2
+bitcoin_version=$1
+bitcoin_conf_chain=$2
+bitcoin_conf_datadir=$3
 
 downloads=${HOME}/downloads
 bitcoin_core=${HOME}/bitcoin_core
@@ -16,7 +17,7 @@ rm -f ${HOME}/.bitcoin/bitcoin.conf
 rm -rf ${bitcoin_conf_datadir}/*
 mkdir -p $downloads $bitcoin_core ${HOME}/.bitcoin ${bitcoin_conf_datadir}
 
-version=23.0
+version=${bitcoin_version}
 wget --output-document=${downloads}/SHA256SUMS.asc https://bitcoincore.org/bin/bitcoin-core-${version}/SHA256SUMS.asc
 wget --output-document=${downloads}/bitcoin-${version}-x86_64-linux-gnu.tar.gz https://bitcoincore.org/bin/bitcoin-core-${version}/bitcoin-${version}-x86_64-linux-gnu.tar.gz
 tar -zxf ${downloads}/bitcoin-${version}-x86_64-linux-gnu.tar.gz --directory $bitcoin_core

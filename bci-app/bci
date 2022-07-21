@@ -37,9 +37,9 @@ class BtcEnvironment(str, Enum):
         return "The bitcoin node environment (linode instance with volume)"
 
 environments = {
-    BtcEnvironment.DEV.value: {"chain": "test", "vol_size_gb": "50"},
-    BtcEnvironment.TEST.value: {"chain": "test", "vol_size_gb": "50"},
-    BtcEnvironment.PROD.value: {"chain": "main", "vol_size_gb": "500"},
+    BtcEnvironment.DEV.value: {"version": "23.0", "chain": "test", "vol_size_gb": "50"},
+    BtcEnvironment.TEST.value: {"version": "23.0", "chain": "test", "vol_size_gb": "50"},
+    BtcEnvironment.PROD.value: {"version": "23.0", "chain": "main", "vol_size_gb": "500"},
 }
 
 def set_logger(log_level):
@@ -73,9 +73,8 @@ def create(
     """
     env = env.value
     set_logger(log_level)
-    chain = environments[env]["chain"]
     linode_root_pass, ssh_key = secret_mgr.get_keys()
-    logging.info(f"'{env}' started with values '{environments[env]}'")
+    logging.info(f"Creating '{env}' with values '{environments[env]}'")
 
     start_time = time.perf_counter()
 
@@ -84,7 +83,7 @@ def create(
     linode_id, linode_ip = linode.create_instance(env, linode_root_pass, ssh_key)
     vol_filesystem_path = linode.create_volume(linode_id, env, vol_label, environments[env]["vol_size_gb"])
     linode.issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
-    bitcoin.launch_bitcoind(linode_ip, chain, vol_label)
+    bitcoin.launch_bitcoind(linode_ip, environments[env]["chain"], vol_label, environments[env]["version"])
     ibl, sod = bitcoin.get_blockchain_info(linode_ip)
     logging.info(f"initialblockdownload = {ibl} with size on disk = {sod}")
 
