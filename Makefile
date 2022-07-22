@@ -23,7 +23,7 @@ build: ## Basic build of bci image
 	docker image build --quiet --tag $(DOCKER_IMAGE_NAME) . 1> /dev/null;\
 
 cli: build ## Enter interactive shell to run linode-cli in the container.    
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash ;\
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci --help; /bin/bash" ;\
 
 bci: build ## Run the bci app. Use linode_tags=<dev|test> (tag must be at least 3 chars)
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci create $(linode_tags)";\
