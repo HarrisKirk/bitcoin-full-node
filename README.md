@@ -20,10 +20,13 @@ sudo usermod -aG docker $USER   # to not require sudo
 * Docker installed with daemon running?
 * ps -ef | grep dockerd
 
+# Put ssh key onto linode to avoid password
+Copy the ~/.ssh/id_rsa.pub contents to the linode ssh key section via cloud console
+
 # Create the bitcoin cloud infrastructure (instance with attached storage volume)
 ```
 $ # CAUTION - all existing storage and nodes are deleted.
-$ make bci
+$ make 
 ```
 
 
