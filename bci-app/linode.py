@@ -178,7 +178,6 @@ def get_ip(env):
         return None
     else:
         logging.debug(f"Found {len(instances)} instance(s) having tags '{env}'")
-        instance = instances[0] # Assume only 1 instance with the env tag
+        instance = instances[0]  # Assume only 1 instance with the env tag
         ip = instance["ipv4"][0]
         return ip
-

@@ -1,6 +1,7 @@
 import os
 from rich import print
 
+
 class SecretMgr:
     """Accessor to secrets.   A single method provides the keys"""
 
@@ -13,7 +14,9 @@ class SecretMgr:
     def __get_linode_root_pass__(self):
         pw = os.getenv("LINODE_ROOT_PASSWORD")
         if pw is None:
-            print("[italic red3]Please set env var LINODE_ROOT_PASSWORD env variable with the root password[/italic red3]")
+            print(
+                "[italic red3]Please set env var LINODE_ROOT_PASSWORD env variable with the root password[/italic red3]"
+            )
             raise SystemExit(2)
         return pw
 
@@ -32,11 +35,11 @@ class SecretMgr:
     def __verify_cli_api_key__(self):
         api_key = os.getenv("LINODE_CLI_TOKEN")
         if api_key is None:
-            print("[italic red3]Please set env var LINODE_CLI_TOKEN env variable with api token from Linode Cloud Manager[/italic red3]")
+            print(
+                "[italic red3]Please set env var LINODE_CLI_TOKEN env variable with api token from Linode Cloud Manager[/italic red3]"
+            )
             raise SystemExit(2)
-        return 
+        return
 
     def get_keys(self):
         return self.linode_root_pass, self.ssh_key
-
-        

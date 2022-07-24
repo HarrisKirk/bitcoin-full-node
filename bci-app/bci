@@ -18,6 +18,7 @@ import os
 app = typer.Typer(help="Bitcoin Cloud Infrastructure cli")
 secret_mgr = SecretMgr()
 
+
 class LogLevel(str, Enum):
     DEBUG = "DEBUG"
     INFO = "INFO"
@@ -28,6 +29,7 @@ class LogLevel(str, Enum):
     def get_help_msg():
         return "Log only messages at or below this level"
 
+
 class BtcEnvironment(str, Enum):
     DEV = "DEV"
     TEST = "TEST"
@@ -36,11 +38,13 @@ class BtcEnvironment(str, Enum):
     def get_help_msg():
         return "The bitcoin node environment (linode instance with volume)"
 
+
 environments = {
     BtcEnvironment.DEV.value: {"version": "23.0", "chain": "test", "vol_size_gb": "50"},
     BtcEnvironment.TEST.value: {"version": "23.0", "chain": "test", "vol_size_gb": "50"},
     BtcEnvironment.PROD.value: {"version": "23.0", "chain": "main", "vol_size_gb": "500"},
 }
+
 
 def set_logger(log_level):
     logging.basicConfig(
@@ -48,6 +52,7 @@ def set_logger(log_level):
         level=eval(f"logging.{log_level}"),
         datefmt="%Y-%m-%d at %H:%M:%S",
     )
+
 
 @app.command()
 def delete(
@@ -105,7 +110,11 @@ def status(
     linode_ip = linode.get_ip(env)
     if linode_ip:
         ibl, sod = bitcoin.get_blockchain_info(linode_ip, environments[env]["version"])
-        print(f"Full node on IP '{linode_ip}': initialblockdownload = {ibl} with size on disk = " + "{:,}".format(sod) + " bytes" )
+        print(
+            f"Full node on IP '{linode_ip}': initialblockdownload = {ibl} with size on disk = "
+            + "{:,}".format(sod)
+            + " bytes"
+        )
 
 
 if __name__ == "__main__":
