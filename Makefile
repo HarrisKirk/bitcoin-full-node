@@ -27,5 +27,8 @@ format: ## format the python code consistently
 	$(DOCKER_RUN_CMD) -v $(PWD)/bci-app:$(DISC_CONTAINER_WORKDIR) $(DOCKER_IMAGE) black --verbose --line-length=120 --include bci $(DISC_CONTAINER_WORKDIR) ;\
 
 test-docker: ## Verify docker is functioning properly to enable bci to run
-	docker run hello-world ;\
+	sudo chmod 666 /var/run/docker.sock ;\
+	sudo usermod -aG docker $(USER) ;\
+	docker run hello-world
+
 	
