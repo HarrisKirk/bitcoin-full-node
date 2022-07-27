@@ -15,9 +15,7 @@ from rich import print
 from enum import Enum, auto
 import os
 
-app = typer.Typer(help="Bitcoin Cloud Infrastructure cli")
 secret_mgr = SecretMgr()
-
 
 class LogLevel(str, Enum):
     DEBUG = "DEBUG"
@@ -53,6 +51,7 @@ def set_logger(log_level):
         datefmt="%Y-%m-%d at %H:%M:%S",
     )
 
+app = typer.Typer(help=f"Bitcoin Cloud Infrastructure cli for creating environments {[env.value for env in BtcEnvironment]}")
 
 @app.command()
 def delete(
@@ -60,13 +59,12 @@ def delete(
     log_level: LogLevel = typer.Option(LogLevel.INFO.value, help=LogLevel.get_help_msg()),
 ):
     """
-    Delete instances and volumes associated with the env
+    Delete instances and volumes for the environment
     """
     set_logger(log_level)
     env = env.value
     logging.info(f"Deleting environment '{env}' referencing chain '{environments[env]['chain']}'")
     linode.cleanup(env)
-
 
 @app.command()
 def create(
@@ -74,7 +72,7 @@ def create(
     log_level: LogLevel = typer.Option(LogLevel.INFO.value, help=LogLevel.get_help_msg()),
 ):
     """
-    Create instances and volumes associated with the env
+    Create instances and volumes for the environment
     """
     env = env.value
     set_logger(log_level)
@@ -109,9 +107,9 @@ def status(
     env = env.value
     linode_ip = linode.get_ip(env)
     if linode_ip:
-        ibl, sod = bitcoin.get_blockchain_info(linode_ip, environments[env]["version"])
+        ibl, sod, chain = bitcoin.get_blockchain_info(linode_ip, environments[env]["version"])
         print(
-            f"Full node on IP '{linode_ip}': initialblockdownload = {ibl} with size on disk = "
+            f"Full node on IP '{linode_ip}': blockchain = {chain}; initialblockdownload = {ibl}; size on disk = "
             + "{:,}".format(sod)
             + " bytes"
         )

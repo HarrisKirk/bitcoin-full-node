@@ -40,4 +40,5 @@ def get_blockchain_info(linode_ip, version):
     json_object = json.loads(console_out)
     ibl = json_object["initialblockdownload"]
     sod = json_object["size_on_disk"]
-    return ibl, sod
+    chain = json_object["chain"]
+    return ibl, sod, chain
