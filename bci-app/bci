@@ -109,7 +109,7 @@ def status(
     if linode_ip:
         ibl, sod, chain = bitcoin.get_blockchain_info(linode_ip, environments[env]["version"])
         print(
-            f"Full node on IP '{linode_ip}': blockchain = {chain}; initialblockdownload = {ibl}; size on disk = "
+            f"Full node on IP '{linode_ip}': blockchain = '{chain}'; initialblockdownload = {ibl}; size on disk = "
             + "{:,}".format(sod)
             + " bytes"
         )
