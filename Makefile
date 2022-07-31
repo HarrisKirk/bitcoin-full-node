@@ -17,7 +17,7 @@ build: ## Basic build of bci image
 	docker image build --tag $(DOCKER_IMAGE_NAME) . 1> /dev/null;\
 
 bci: build ## Print help message and enter environment to run bci tool.   
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci --help; /bin/bash" ;\
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci --install-completion 1> /dev/null; /bin/bash" ;\
 
 clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\
