@@ -45,6 +45,11 @@ Examples:
 # bci create PROD    # Create a PROD bitcoin node which runs in a large volume against the 'main' bitcoin blockchain
 
 ```
+Note: command line completion is enabled so that you can press the [TAB] key to get a list of valid commands and parameters after the 'bci'
+
+* Example 1: ```$bci [tab]``` 
+* Example 2: ```$bci c[tab]```
+
 ## Notes
 * This bci software tool does not perform any financial transacations.   It also does not store or manage any keys. It simply creates a computer in the linode cloud, attaches a volume and installs the bitcoin full node software on it.   
 * Docker is used to avoid needing to install python, dependent modules and any other dependencies in the future.
