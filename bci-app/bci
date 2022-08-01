@@ -17,6 +17,7 @@ import os
 
 secret_mgr = SecretMgr()
 
+
 class LogLevel(str, Enum):
     DEBUG = "DEBUG"
     INFO = "INFO"
@@ -51,7 +52,11 @@ def set_logger(log_level):
         datefmt="%Y-%m-%d at %H:%M:%S",
     )
 
-app = typer.Typer(help=f"Bitcoin Cloud Infrastructure cli for creating environments {[env.value for env in BtcEnvironment]}")
+
+app = typer.Typer(
+    help=f"Bitcoin Cloud Infrastructure cli for creating environments {[env.value for env in BtcEnvironment]}"
+)
+
 
 @app.command()
 def delete(
@@ -65,6 +70,7 @@ def delete(
     env = env.value
     logging.info(f"Deleting environment '{env}' referencing chain '{environments[env]['chain']}'")
     linode.cleanup(env)
+
 
 @app.command()
 def create(
