@@ -4,7 +4,8 @@ BCI (Bitcoin Cloud Infrastructure)
 Use linode-cli and shell to spin up and start bitcoin full node.
 """
 from common import execute_sh
-from setup import SecretMgr
+from setup import SecretMgr, LogLevel
+from environ import BtcEnvironment, environments
 import linode
 import bitcoin
 import sys
@@ -12,37 +13,9 @@ import time
 import logging
 import typer
 from rich import print
-from enum import Enum, auto
 import os
 
 secret_mgr = SecretMgr()
-
-
-class LogLevel(str, Enum):
-    DEBUG = "DEBUG"
-    INFO = "INFO"
-    WARNING = "WARNING"
-    ERROR = "ERROR"
-    CRITICAL = "CRITICAL"
-
-    def get_help_msg():
-        return "Log only messages at or below this level"
-
-
-class BtcEnvironment(str, Enum):
-    DEV = "DEV"
-    TEST = "TEST"
-    PROD = "PROD"
-
-    def get_help_msg():
-        return "The bitcoin node environment (linode instance with volume)"
-
-
-environments = {
-    BtcEnvironment.DEV.value: {"version": "23.0", "chain": "test", "vol_size_gb": "50"},
-    BtcEnvironment.TEST.value: {"version": "23.0", "chain": "test", "vol_size_gb": "50"},
-    BtcEnvironment.PROD.value: {"version": "23.0", "chain": "main", "vol_size_gb": "500"},
-}
 
 
 def set_logger(log_level):

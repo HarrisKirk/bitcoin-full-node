@@ -1,5 +1,6 @@
 import os
 from rich import print
+from enum import Enum, auto
 
 
 class SecretMgr:
@@ -43,3 +44,14 @@ class SecretMgr:
 
     def get_keys(self):
         return self.linode_root_pass, self.ssh_key
+
+
+class LogLevel(str, Enum):
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+    def get_help_msg():
+        return "Log only messages at or below this level"
