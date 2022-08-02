@@ -29,6 +29,6 @@ format: ## format the python code consistently
 test-docker: ## Verify docker is functioning properly to enable bci to run
 	sudo chmod 666 /var/run/docker.sock ;\
 	sudo usermod -aG docker $(USER) ;\
-	docker run hello-world
+	docker run hello-world | egrep "(Hello|appears)"
 
 	

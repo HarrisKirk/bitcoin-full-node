@@ -19,6 +19,13 @@ To build a command line tool that will be a foundation for implementing bitcoin 
 ### Put ssh key onto linode to avoid password prompt
 Copy the ~/.ssh/id_rsa.pub contents to the linode ssh key section via cloud console.   This step will allow the bci tool to execute commands on the remote linode instance without requiring a password.
 
+### Test that make has been installed correctly
+```
+$ make
+:
+:
+:
+```
 ### Test that docker has been installed correctly
 ```
 $ make test-docker
@@ -29,6 +36,7 @@ Hello from Docker!
 This message shows that your installation appears to be working correctly.
 ```
 ### Create environment variables (put into ~/.bashrc)
+On the linode Cloud Manager, select "Profile and Account" in the top right corner.    Select "API Tokens" then "Create a Personal Access Token" one with the default privileges (only linode instance and volume creation are needed).   Copy the API token and place it in the environment variable LINODE_API_TOKEN as below:
 ```
 export LINODE_CLI_TOKEN="2a2f4563d1......33ca8a32e23"   # Create with linode Cloud Manager 
 export LINODE_ROOT_PASSWORD="mypassword" 
@@ -36,14 +44,14 @@ export LINODE_ROOT_PASSWORD="mypassword"
 
 ## Running the bci tool
 ```
-$ make bci
-
+$ make bci # Might take a few minutes the first time.  It will be very fast subsequently.
+```
 Run bci commands (use $bci --help)
 
 Examples:
+```
 # bci create DEV    # Create a DEV bitcoin node which runs in a small volume against the 'test' bitcoin blockchain
 # bci create PROD    # Create a PROD bitcoin node which runs in a large volume against the 'main' bitcoin blockchain
-
 ```
 Note: command line completion is enabled so that you can press the [TAB] key to get a list of valid commands and parameters after the 'bci'
 
