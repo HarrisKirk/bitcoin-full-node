@@ -94,5 +94,17 @@ def status(
         )
 
 
+@app.command()
+def list(
+    log_level: LogLevel = typer.Option(LogLevel.INFO.value, help=LogLevel.get_help_msg()),
+):
+    """
+    List all linode instance labels associated with the account
+    """
+    set_logger(log_level)
+    instances = linode.list_instances()
+    for instance in instances:
+        print(instance)
+
 if __name__ == "__main__":
     app()

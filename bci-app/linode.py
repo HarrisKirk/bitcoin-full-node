@@ -181,3 +181,18 @@ def get_ip(env):
         instance = instances[0]  # Assume only 1 instance with the env tag
         ip = instance["ipv4"][0]
         return ip
+
+
+def list_instances() -> list: 
+    """List all linodes instances associated with the account"""
+    cmd = ["linode-cli", "linodes", "list", "--json"]
+    json_object = execute_cli(cmd)
+    instances = json_object
+    if len(instances) == 0:
+        logging.info(f"No instances found")
+        return None
+    else:
+        logging.debug(f"Found {len(instances)} instance(s)")
+        return [instance['label'] for instance in instances]
+
+
