@@ -183,7 +183,7 @@ def get_ip(env):
         return ip
 
 
-def list_instances() -> list: 
+def get_instances() -> list: 
     """List all linodes instances associated with the account"""
     cmd = ["linode-cli", "linodes", "list", "--json"]
     json_object = execute_cli(cmd)
