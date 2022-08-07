@@ -16,5 +16,5 @@ class BtcEnvironment(str, Enum):
 environments = {
     BtcEnvironment.DEV.value: {"version": "23.0", "chain": "test", "vol_size_gb": "50"},
     BtcEnvironment.TEST.value: {"version": "23.0", "chain": "test", "vol_size_gb": "50"},
-    BtcEnvironment.PROD.value: {"version": "23.0", "chain": "main", "vol_size_gb": "500"},
+    BtcEnvironment.PROD.value: {"version": "23.0", "chain": "main", "vol_size_gb": "700"},
 }
