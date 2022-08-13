@@ -68,10 +68,10 @@ def remove_existing_volumes(linode_tags):
     logging.debug(cmd)
     json_object = execute_cli(cmd)
     volume_ids = [vol["id"] for vol in json_object]
-    if len(volume_ids) == 0:
-        logging.info(f"No volumes found having tags '{linode_tags}'")
-    else:
+    if volume_ids:
         logging.info(f"Found {len(volume_ids)} volume(s) having tags '{linode_tags}': {volume_ids}")
+    else:
+        logging.info(f"No volumes found having tags '{linode_tags}'")
 
     for volume_id in volume_ids:
         cmd = ["linode-cli", "volumes", "detach", str(volume_id), "--json"]
@@ -92,15 +92,15 @@ def remove_instances(linode_tags):
     cmd = ["linode-cli", "linodes", "list", "--tags", linode_tags, "--json"]
     json_object = execute_cli(cmd)
     instances = json_object
-    if len(instances) == 0:
-        logging.info(f"No instances found having tags '{linode_tags}'")
-    else:
+    if instances:
         logging.info(f"Found {len(instances)} instance(s) having tags '{linode_tags}'")
         for instance in instances:
             cmd = ["linode-cli", "linodes", "delete", str(instance["id"])]
             json_object = execute_cli(cmd)
             time.sleep(2)
             logging.info(f"Instance {instance['id']} deleted.")
+    else:
+        logging.info(f"No instances found having tags '{linode_tags}'")
 
 
 def cleanup(linode_tags):
@@ -175,14 +175,14 @@ def get_ip(env):
     cmd = ["linode-cli", "linodes", "list", "--tags", env, "--json"]
     json_object = execute_cli(cmd)
     instances = json_object
-    if len(instances) == 0:
-        logging.warn(f"No instances found having tags '{env}'")
-        return None
-    else:
+    if instances:
         logging.debug(f"Found {len(instances)} instance(s) having tags '{env}'")
         instance = instances[0]  # Assume only 1 instance with the env tag
         ip = instance["ipv4"][0]
         return ip
+    else:
+        logging.warn(f"No instances found having tags '{env}'")
+        return None
 
 
 def get_instances() -> list:
@@ -190,9 +190,9 @@ def get_instances() -> list:
     cmd = ["linode-cli", "linodes", "list", "--json"]
     json_object = execute_cli(cmd)
     instances = json_object
-    if len(instances) == 0:
-        logging.info(f"No instances found")
-        return None
-    else:
+    if instances:
         logging.debug(f"Found {len(instances)} instance(s)")
         return [instance["label"] for instance in instances]
+    else:
+        logging.info(f"No instances found")
+        return None
