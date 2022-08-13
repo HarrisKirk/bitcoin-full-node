@@ -7,10 +7,10 @@ set -e
 # Basic Tests that should always work
 #/
 bci --help
-# bci create TEST --log-level=DEBUG
-# sleep 10
-# bci status TEST
-# bci delete TEST --log-level=DEBUG
+bci create TEST --log-level=DEBUG
+sleep 10
+bci status TEST
+bci delete TEST --log-level=DEBUG
 
 
 
