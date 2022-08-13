@@ -27,7 +27,7 @@ format: ## format the python code consistently
 	$(DOCKER_RUN_CMD) -v $(PWD)/bci-app:$(DISC_CONTAINER_WORKDIR) $(DOCKER_IMAGE) black --verbose --line-length=120 --include bci $(DISC_CONTAINER_WORKDIR) ;\
 
 test-int: build ## Integration test intended for CICD server
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "chmod 775 ../run-test.sh; ../run-test.sh" ;\
+	$(DOCKER_RUN_CMD) $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) sh -c "chmod 775 ../run-test.sh; ../run-test.sh" ;\
 
 test-docker: ## Verify docker is functioning properly to enable bci to run
 	sudo chmod 666 /var/run/docker.sock ;\
