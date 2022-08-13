@@ -7,7 +7,7 @@ ENV PATH=.:$PATH
 WORKDIR /opt/devops-bci
 COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt --upgrade
 RUN pip install black
 
 COPY . .

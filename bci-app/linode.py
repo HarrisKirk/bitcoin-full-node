@@ -76,6 +76,8 @@ def remove_existing_volumes(linode_tags):
     for volume_id in volume_ids:
         cmd = ["linode-cli", "volumes", "detach", str(volume_id), "--json"]
         json_object = execute_cli(cmd)
+        time.sleep(5)
+        json_object = execute_cli(cmd) # Linode seems to need the detach command twice
         wait_for_detached_volume(volume_id)
         logging.debug(f"Volume {volume_id} successfully detached.")
 
