@@ -77,7 +77,7 @@ def remove_existing_volumes(linode_tags):
         cmd = ["linode-cli", "volumes", "detach", str(volume_id), "--json"]
         json_object = execute_cli(cmd)
         time.sleep(5)
-        json_object = execute_cli(cmd) # Linode seems to need the detach command twice
+        json_object = execute_cli(cmd)  # Linode seems to need the detach command twice
         wait_for_detached_volume(volume_id)
         logging.debug(f"Volume {volume_id} successfully detached.")
 
@@ -185,7 +185,7 @@ def get_ip(env):
         return ip
 
 
-def get_instances() -> list: 
+def get_instances() -> list:
     """List all linodes instances associated with the account"""
     cmd = ["linode-cli", "linodes", "list", "--json"]
     json_object = execute_cli(cmd)
@@ -195,6 +195,4 @@ def get_instances() -> list:
         return None
     else:
         logging.debug(f"Found {len(instances)} instance(s)")
-        return [instance['label'] for instance in instances]
-
-
+        return [instance["label"] for instance in instances]
