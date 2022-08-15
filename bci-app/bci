@@ -13,6 +13,8 @@ import time
 import logging
 import typer
 from rich import print
+from rich.console import Console
+from rich.table import Table
 import os
 
 secret_mgr = SecretMgr()
@@ -87,11 +89,15 @@ def status(
     linode_ip = linode.get_ip(env)
     if linode_ip:
         ibl, sod, chain = bitcoin.get_blockchain_info(linode_ip, environments[env]["version"])
-        print(
-            f"Full node on IP '{linode_ip}': blockchain = '{chain}'; initialblockdownload = {ibl}; size on disk = "
-            + "{:,}".format(sod)
-            + " bytes"
-        )
+        table = Table()
+        table.add_column("IP", style="cyan", no_wrap=True)
+        table.add_column("Chain Name", style="magenta")
+        table.add_column("initialblockdownload", justify="left", style="green")
+        table.add_column("Size on Disk", justify="right", style="green")
+        table.add_row(linode_ip, chain, str(ibl), "{:,}".format(sod))
+
+        console = Console()
+        console.print(table)
 
 
 @app.command()
