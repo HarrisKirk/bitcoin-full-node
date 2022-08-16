@@ -109,8 +109,13 @@ def list(
     """
     set_logger(log_level)
     instances = linode.get_instances()
+    table = Table()
+    table.add_column("Full Node Label", style="cyan", no_wrap=True)
     for instance in instances:
-        print(instance)
+        table.add_row(instance)
+
+    console = Console()
+    console.print(table)
 
 
 if __name__ == "__main__":
