@@ -3,6 +3,9 @@ on: [push]
 env:
   LINODE_ROOT_PASSWORD: ${{secrets.LINODE_ROOT_PASSWORD}}
   LINODE_CLI_TOKEN: ${{secrets.LINODE_CLI_TOKEN}} 
+  DOCKER_USER: ${{secrets.DOCKER_USER}}
+  DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+  REPO_NAME: ${{secrets.REPO_NAME}}  
 jobs:
   bci-platform-test:
     runs-on: ubuntu-latest
