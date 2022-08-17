@@ -18,6 +18,9 @@ jobs:
         run: ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1      
       - name: Run the integration test
         run: make test-int
+      - name: docker login
+        run: | # log into docker hub account
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD          
       - name: Push image to Dockerhub
         run: make push
       - name: Final Status
