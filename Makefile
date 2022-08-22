@@ -20,10 +20,10 @@ push: ## Push image to dockerhub
 	docker image push $(DOCKER_IMAGE)
 
 bci: build ## Enter the command line environment to run bci (use #bci --help)  
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci --install-completion 1> /dev/null; /bin/bash" ;\
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) ;\
 
 run: ## Run without build (pulls from Dockerhub if needed)
-	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) /bin/bash -c "bci --install-completion 1> /dev/null; /bin/bash" ;\
+	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) ;\
 
 clean: ## Remove all images and output folder
 	docker system prune	--force >/dev/null ;\
