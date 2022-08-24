@@ -17,7 +17,9 @@ build: ## Basic build of bci image
 	docker image build --tag $(DOCKER_IMAGE) . 1> /dev/null;\
 
 push: ## Push image to dockerhub
-	docker image push $(DOCKER_IMAGE)
+	docker tag $(DOCKER_IMAGE_NAME):latest $(DOCKER_IMAGE_NAME):1.0
+	docker image push $(DOCKER_IMAGE_NAME):latest
+	docker image push $(DOCKER_IMAGE_NAME):1.0
 
 bci: build ## Enter the command line environment to run bci (use #bci --help)  
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) ;\
