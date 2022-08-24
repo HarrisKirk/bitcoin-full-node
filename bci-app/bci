@@ -95,7 +95,7 @@ def status(
         table.add_column("initialblockdownload", justify="left", style="green")
         table.add_column("Blocks", justify="left", style="green")
         table.add_column("Size on Disk", justify="right", style="green")
-        table.add_row(linode_ip, chain, str(ibl), str(blocks), "{:,}".format(sod))
+        table.add_row(linode_ip, chain, str(ibl), "{:,}".format(blocks), "{:,}".format(sod))
 
         console = Console()
         console.print(table)
