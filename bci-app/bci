@@ -68,7 +68,7 @@ def create(
     vol_filesystem_path = linode.create_volume(linode_id, env, vol_label, environments[env]["vol_size_gb"])
     linode.issue_remote_vol_commands(linode_ip, vol_label, vol_filesystem_path)
     bitcoin.launch_bitcoind(linode_ip, environments[env]["chain"], vol_label, environments[env]["version"])
-    ibl, sod, chain = bitcoin.get_blockchain_info(linode_ip, environments[env]["version"])
+    ibl, sod, chain, blocks = bitcoin.get_blockchain_info(linode_ip, environments[env]["version"])
     logging.info(f"initialblockdownload = {ibl} with size on disk = {sod}")
 
     end_time = time.perf_counter()

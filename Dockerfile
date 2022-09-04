@@ -13,6 +13,6 @@ RUN pip install black
 COPY . .
 VOLUME /root/.ssh
 
-ENTRYPOINT  ["/bin/bash", "-c", "bci --install-completion 1> /dev/null; /bin/bash"]
+CMD  ["/bin/bash", "-c", "bci --install-completion 1> /dev/null; /bin/bash"]
 
 

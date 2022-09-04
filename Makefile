@@ -6,6 +6,8 @@ DOCKER_IMAGE = $(DOCKER_IMAGE_NAME):latest
 DOCKER_RUN_CMD = docker container run --dns=8.8.8.8 --rm --name=bci --workdir $(BCI_CONTAINER_WORKDIR) --user $(id -u):$(id -g)
 DOCKER_ENV_STRING = -e LINODE_CLI_TOKEN -e LINODE_ROOT_PASSWORD 
 DOCKER_VOLUME_MOUNTS = -v ~/.ssh:/root/.ssh 
+BCI_TAG = `git describe`
+
 
 help:
 	@echo ""
@@ -17,9 +19,10 @@ build: ## Basic build of bci image
 	docker image build --tag $(DOCKER_IMAGE) . 1> /dev/null;\
 
 push: ## Push image to dockerhub
-	docker tag $(DOCKER_IMAGE_NAME):latest $(DOCKER_IMAGE_NAME):1.0
+	echo "The tag is $(BCI_TAG)"
+	docker tag $(DOCKER_IMAGE_NAME):latest $(DOCKER_IMAGE_NAME):$(BCI_TAG)
 	docker image push $(DOCKER_IMAGE_NAME):latest
-	docker image push $(DOCKER_IMAGE_NAME):1.0
+	docker image push $(DOCKER_IMAGE_NAME):$(BCI_TAG)
 
 bci: build ## Enter the command line environment to run bci (use #bci --help)  
 	$(DOCKER_RUN_CMD) -it $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) ;\
