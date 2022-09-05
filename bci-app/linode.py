@@ -126,7 +126,7 @@ def create_instance(linode_tags, linode_root_pass, ssh_key):
         "--region",
         "us-east",
         "--image",
-        "linode/ubuntu21.10",
+        "linode/ubuntu22.04",
         "--type",
         "g6-standard-1",
         "--tags",
