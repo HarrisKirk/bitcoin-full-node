@@ -30,5 +30,8 @@ jobs:
           provider: dockerhub
           short_description: 'Run bitcoin full node on linode cloud provider'
           readme_file: 'README-runtime.md'        
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASS: ${{secrets.DOCKER_PASSWORD}}    
       - name: Final Status
         run: echo "This job's status is ${{ job.status }}."
