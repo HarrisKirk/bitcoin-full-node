@@ -1,4 +1,5 @@
 import os
+import sys
 from rich import print
 from enum import Enum, auto
 
@@ -6,20 +7,22 @@ from enum import Enum, auto
 class SecretMgr:
     """Accessor to secrets.   A single method provides the keys"""
 
-    def __init__(self):
-        """If any secret is missing, raise the appropriate exception"""
-        self.linode_root_pass = self.__get_linode_root_pass__()
-        self.ssh_key = self.__get_ssh_key__()
-        self.__verify_cli_api_key__()  # verified but not accessed (used only by subprocess)
+    rich_color = "italic red3"
 
-    def __get_linode_root_pass__(self):
-        pw = os.getenv("LINODE_ROOT_PASSWORD")
-        if pw is None:
-            print(
-                "[italic red3]Please set env var LINODE_ROOT_PASSWORD env variable with the root password[/italic red3]"
-            )
-            raise SystemExit(2)
-        return pw
+    def __init__(self):
+        """If any secret is missing, abort with appropriate messages"""
+        self.ssh_key = self.__get_ssh_key__()
+        self.linode_root_pass = self.__get_env_var__("LINODE_ROOT_PASSWORD", "with the linode root password")
+        self.linode_cli_token = self.__get_env_var__("LINODE_CLI_TOKEN", "with api token from Linode Cloud Manager")
+        self.all_secrets_found = self.ssh_key and self.linode_root_pass and self.linode_cli_token
+        if not self.all_secrets_found:
+            sys.exit(2)
+
+    def __get_env_var__(self, env_var_name, msg):
+        env_var = os.getenv(env_var_name)
+        if env_var is None:
+            print(f"[{SecretMgr.rich_color}]Please set env var {env_var_name} {msg}[/{SecretMgr.rich_color}]")
+        return env_var
 
     def __get_ssh_key__(self):
         home = os.getenv("HOME")
@@ -28,19 +31,12 @@ class SecretMgr:
             with open(public_key_file) as f:
                 ssh_rsa_public_key = f.read()
         except:
-            print(f"[italic red3]Please create {public_key_file} by running ssh-keygen[/italic red3]")
-            raise SystemExit(2)
+            print(
+                f"[{SecretMgr.rich_color}]Please create {public_key_file} by running ssh-keygen and accepting defaults[/{SecretMgr.rich_color}]"
+            )
+            return None
         else:
             return ssh_rsa_public_key.rstrip()
-
-    def __verify_cli_api_key__(self):
-        api_key = os.getenv("LINODE_CLI_TOKEN")
-        if api_key is None:
-            print(
-                "[italic red3]Please set env var LINODE_CLI_TOKEN env variable with api token from Linode Cloud Manager[/italic red3]"
-            )
-            raise SystemExit(2)
-        return
 
     def get_keys(self):
         return self.linode_root_pass, self.ssh_key
