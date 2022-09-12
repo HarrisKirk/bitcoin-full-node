@@ -23,5 +23,12 @@ jobs:
         run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD          
       - name: Push image to Dockerhub
         run: make push
+      - name: push runtime readme to Dockerhub
+        uses: christian-korneck/update-container-description-action@v1
+        with:
+          destination_container_repo: cjtkirk1/bitcoin-linode
+          provider: dockerhub
+          short_description: 'Run bitcoin full node on linode cloud provider'
+          readme_file: 'README-runtime.md'        
       - name: Final Status
         run: echo "This job's status is ${{ job.status }}."
