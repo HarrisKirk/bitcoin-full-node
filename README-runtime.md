@@ -16,7 +16,7 @@ export LINODE_ROOT_PASSWORD="mypassword"
 
 These are the command to launch the bci command line tool directly from the image in docker hub.
 ```
-$ alias bci="docker container run --rm --name=bci --workdir /opt/devops-bci/bci-app --user : -it -e LINODE_CLI_TOKEN -e LINODE_ROOT_PASSWORD -v /home/<username>/.ssh:/root/.ssh cjtkirk1/bitcoin-linode:latest"
+$ alias bci="docker container run --rm --name=bci --workdir /opt/devops-bci/bci-app --user : -it -e LINODE_CLI_TOKEN -e LINODE_ROOT_PASSWORD -v /home/$(whoami)/.ssh:/root/.ssh cjtkirk1/bitcoin-linode:latest"
 $ bci
 ```
 
