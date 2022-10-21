@@ -195,4 +195,5 @@ def get_instances() -> list:
         return [instance["label"] for instance in instances]
     else:
         logging.info(f"No instances found")
-        return None
+        return []
+
