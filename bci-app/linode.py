@@ -29,7 +29,7 @@ def wait_for_running_state(linode_id):
 
 def wait_for_volume_ready():
     """Ensure volume is ready to be mounted (status = 'active' is not sufficient)"""
-    time.sleep(30)
+    time.sleep(120)
 
 
 def wait_for_volume_active(vol_id):
