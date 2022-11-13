@@ -1,6 +1,6 @@
 # Main image builder for blin 
 
-FROM python:3
+FROM python:3.10.5
 MAINTAINER Harris Kirk <cjtkirk@protonmail.com>
 
 ENV PATH=.:$PATH
