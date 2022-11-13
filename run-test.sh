@@ -6,7 +6,6 @@ set -e
 #\
 # Basic Tests that should always work
 #/
-/usr/bin/env python -V
 bci --help
 bci create TEST --log-level=DEBUG
 sleep 10

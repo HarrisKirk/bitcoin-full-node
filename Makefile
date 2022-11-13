@@ -45,7 +45,4 @@ test-docker: ## Verify docker is functioning properly to enable bci to run
 	sudo usermod -aG docker $(USER) ;\
 	docker run hello-world | egrep "(Hello|appears)"
 
-debug: ## Temp debug
-	$(DOCKER_RUN_CMD) $(DOCKER_ENV_STRING) $(DOCKER_VOLUME_MOUNTS) $(DOCKER_IMAGE) sh -c "/usr/bin/env python -V" ;\
-
 	

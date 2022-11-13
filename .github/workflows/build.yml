@@ -18,6 +18,20 @@ jobs:
       - name: Set ssh key
         run: ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1      
       - name: Run the integration test
-        run: make debug
+        run: make test-int
+      - name: docker login
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD          
+      - name: Push image to Dockerhub
+        run: make push
+      - name: push runtime readme to Dockerhub
+        uses: christian-korneck/update-container-description-action@v1
+        with:
+          destination_container_repo: cjtkirk1/bitcoin-linode
+          provider: dockerhub
+          short_description: 'Run bitcoin full node on linode cloud provider'
+          readme_file: 'README-runtime.md'        
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASS: ${{secrets.DOCKER_PASSWORD}}    
       - name: Final Status
         run: echo "This job's status is ${{ job.status }}."
