@@ -4,6 +4,7 @@ Common functions related to running local and remote processes
 import subprocess
 import json
 import logging
+from retry import retry
 
 
 def execute_cli(cmd):
@@ -28,6 +29,7 @@ def execute_cli(cmd):
         raise Exception()
 
 
+@retry(tries=5, delay=10, logger=logging.getLogger())
 def execute_ssh(linode_ip, user, remote_cmd):
     """Execute shell commend on remote linode without strict host key checking"""
     cmd = ["ssh", "-o", "StrictHostKeyChecking=no", f"{user}@{linode_ip}"] + remote_cmd

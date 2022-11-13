@@ -27,11 +27,6 @@ def wait_for_running_state(linode_id):
         logging.debug(f"Status = {linode_status}")
 
 
-def wait_for_volume_ready():
-    """Ensure volume is ready to be mounted (status = 'active' is not sufficient)"""
-    time.sleep(120) # TODO: Replace with re-try logic in the ssh to ensure connection
-
-
 def wait_for_volume_active(vol_id):
     """Poll volume until 'active'"""
     cmd = ["linode-cli", "volumes", "view", str(vol_id), "--json"]
@@ -44,7 +39,6 @@ def wait_for_volume_active(vol_id):
         json_object = execute_cli(cmd)
         status = json_object[0]["status"]
         logging.debug(f"Status = {status}")
-    wait_for_volume_ready()
 
 
 def wait_for_detached_volume(vol_id):
@@ -196,4 +190,3 @@ def get_instances() -> list:
     else:
         logging.info(f"No instances found")
         return []
-
