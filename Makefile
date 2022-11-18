@@ -6,7 +6,7 @@ DOCKER_IMAGE = $(DOCKER_IMAGE_NAME):latest
 DOCKER_RUN_CMD = docker container run --rm --name=bci --workdir $(BCI_CONTAINER_WORKDIR) --user $(id -u):$(id -g)
 DOCKER_ENV_STRING = -e LINODE_CLI_TOKEN -e LINODE_ROOT_PASSWORD 
 DOCKER_VOLUME_MOUNTS = -v ~/.ssh:/root/.ssh 
-BCI_TAG = `git describe`
+BCI_TAG = `git describe --tags`
 
 
 help:
