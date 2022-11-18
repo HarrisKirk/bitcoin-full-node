@@ -20,6 +20,7 @@ export LINODE_CLI_TOKEN="2a2f4563d1......33ca8a32e23"   # Create with linode Clo
 export LINODE_ROOT_PASSWORD="mypassword" 
 ```
 
+
 ### Put ssh key onto linode to avoid password prompt
 Copy the ~/.ssh/id_rsa.pub contents to the linode ssh key section via cloud console.   This step will allow the bci tool to execute commands on the remote linode instance without requiring a password.
 
