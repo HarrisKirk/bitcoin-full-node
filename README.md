@@ -63,6 +63,15 @@ Note: command line completion is enabled so that you can press the [TAB] key to 
 * Example 1: ```$bci [tab]``` 
 * Example 2: ```$bci c[tab]```
 
+## Release Process
+Every pushed commit will run the github workflow (.github/workflows/build.yml) and run the integration tests.  If these integration tests pass the image will be tagged and pushed to Dockerhub.
+
+To apply a tag (eg 1.0) use these steps _after_ a successful build on github:
+```
+git tag -m "Annotated comment" x.y master
+git push origin x.y
+```
+The build will run on github (https://github.com/HarrisKirk/bitcoin-full-node/actions) and will use the git tag to label the image when pushed to Dockerhub.
 
 ## Runtime Environment
 These are the command to launch the bci command line tool directly from the image in docker hub.
